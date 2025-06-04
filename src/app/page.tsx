@@ -59,8 +59,8 @@ export default function TubeDigestPage() {
 
     setIsLoadingTranscript(true);
     let transcriptFetched = false;
-    let transcriptData;
-    let lastTranscriptError: any = null;
+    let fetchedTranscriptContent = '';
+    let finalErrorForDisplay: string | null = null;
 
     for (let attempt = 1; attempt <= MAX_TRANSCRIPT_RETRIES; attempt++) {
       try {
@@ -74,53 +74,72 @@ export default function TubeDigestPage() {
           body: JSON.stringify({ url: youtubeUrl }),
         });
 
-        transcriptData = await transcriptResponse.json();
+        const responseBody = await transcriptResponse.json();
 
         if (!transcriptResponse.ok) {
-          throw new Error(transcriptData.error || `Failed to fetch transcript (status: ${transcriptResponse.status})`);
+          const errorMessage = responseBody.error || `Failed to fetch transcript (status: ${transcriptResponse.status})`;
+          // Jangan retry jika format URL tidak valid
+          if (errorMessage.includes('Invalid YouTube URL format.')) {
+            finalErrorForDisplay = errorMessage;
+            transcriptFetched = false;
+            break; 
+          }
+          throw new Error(errorMessage); // Lemparkan error lain untuk memicu retry
         }
-        setTranscript(transcriptData.transcript);
+        
+        // Sukses mengambil transkrip
+        fetchedTranscriptContent = responseBody.transcript;
+        transcriptFetched = true;
+        finalErrorForDisplay = null; // Hapus error dari percobaan sebelumnya jika berhasil
         toast({
           title: "Transcript Fetched",
           description: "Successfully fetched the video transcript.",
         });
-        transcriptFetched = true;
-        lastTranscriptError = null; // Reset error on success
-        break; // Exit retry loop on success
+        break; // Keluar dari loop retry jika berhasil
       } catch (e: any) {
-        lastTranscriptError = e;
-        setError(`Attempt ${attempt} failed: ${e.message}`);
+        finalErrorForDisplay = e.message;
+        // Jika error spesifik mengenai format URL muncul di catch block (misal karena error jaringan sebelum parsing JSON)
+        if (e.message && e.message.includes('Invalid YouTube URL format.')) {
+            transcriptFetched = false;
+            break; 
+        }
+
         if (attempt < MAX_TRANSCRIPT_RETRIES) {
           toast({
             title: "Transcript Fetch Failed",
-            description: `Attempt ${attempt} failed. Retrying in ${RETRY_DELAY_MS / 1000} seconds...`,
+            description: `Attempt ${attempt} failed: ${e.message}. Retrying in ${RETRY_DELAY_MS / 1000} seconds...`,
             variant: "destructive",
           });
           await sleep(RETRY_DELAY_MS);
+        } else {
+          // Percobaan terakhir gagal
+          toast({
+            title: "Transcript Error",
+            description: `Failed to fetch transcript after ${attempt} attempts: ${finalErrorForDisplay}`,
+            variant: "destructive",
+          });
         }
       }
     }
 
     setIsLoadingTranscript(false);
 
-    if (!transcriptFetched || !transcriptData?.transcript) {
-      const finalErrorMessage = lastTranscriptError?.message || 'Failed to fetch transcript after multiple retries.';
-      setError(finalErrorMessage);
-      toast({
-        title: "Transcript Error",
-        description: finalErrorMessage,
-        variant: "destructive",
-      });
-      return; // Stop if transcript fetching ultimately failed
+    if (!transcriptFetched) {
+      setError(finalErrorForDisplay || "An unknown error occurred while fetching the transcript.");
+      return; 
     }
     
-    // Proceed to summarization only if transcript was successful
+    // Jika transkrip berhasil diambil, pastikan state error bersih dan set transkrip
+    setError(null); 
+    setTranscript(fetchedTranscriptContent);
+    
+    // Lanjutkan ke ringkasan hanya jika transkrip berhasil
     setIsLoadingSummary(true);
     try {
       const summaryResponse = await fetch('/api/summarize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ transcript: transcriptData.transcript }),
+        body: JSON.stringify({ transcript: fetchedTranscriptContent }),
       });
 
       const summaryData = await summaryResponse.json();
@@ -258,3 +277,5 @@ export default function TubeDigestPage() {
     </div>
   );
 }
+
+    
