@@ -225,7 +225,7 @@ export default function TubeDigestPage() {
                 </div>
                 <div id="summary-section-kronologi-alur">
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">2. Kronologi/Alur</h3>
-                  <ScrollArea className="h-auto max-h-60 w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-kronologi-alur">
+                  <ScrollArea className="h-auto w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-kronologi-alur">
                     <p className="whitespace-pre-wrap leading-relaxed pb-4" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.kronologiAlur) }} />
                   </ScrollArea>
                 </div>
@@ -258,3 +258,4 @@ export default function TubeDigestPage() {
     </div>
   );
 }
+
