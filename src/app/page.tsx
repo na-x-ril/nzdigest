@@ -218,7 +218,7 @@ export default function TubeDigestPage() {
                 <FileTextIcon className="mr-3 h-6 w-6 text-primary" /> Transcript
               </CardTitle>
               <ScrollArea className="h-64 w-full rounded-md border bg-muted/30 p-4" id="transcript-scroll-area">
-                <p className="text-sm whitespace-pre-wrap leading-relaxed pb-4">{transcript}</p>
+                <p className="text-sm whitespace-pre-wrap leading-relaxed pb-2">{transcript}</p>
               </ScrollArea>
             </div>
           )}
@@ -232,31 +232,31 @@ export default function TubeDigestPage() {
                 <div id="summary-section-topik-utama">
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">1. Topik Utama</h3>
                   <ScrollArea className="h-auto w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-topik-utama">
-                    <p className="whitespace-pre-wrap leading-relaxed pb-2" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.topikUtama) }} />
+                    <p className="whitespace-pre-wrap leading-relaxed" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.topikUtama) }} />
                   </ScrollArea>
                 </div>
                 <div id="summary-section-kronologi-alur">
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">2. Kronologi/Alur</h3>
                   <ScrollArea className="h-auto w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-kronologi-alur">
-                    <p className="whitespace-pre-wrap leading-relaxed pb-0" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.kronologiAlur) }} />
+                    <p className="whitespace-pre-wrap leading-relaxed" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.kronologiAlur) }} />
                   </ScrollArea>
                 </div>
                 <div id="summary-section-poin-kunci">
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">3. Poin-poin Kunci</h3>
                   <ScrollArea className="h-auto w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-poin-kunci">
-                     <p className="whitespace-pre-wrap leading-relaxed pb-2" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.poinPoinKunci) }} />
+                     <p className="whitespace-pre-wrap leading-relaxed" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.poinPoinKunci) }} />
                   </ScrollArea>
                 </div>
                 <div id="summary-section-pembelajaran-insight">
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">4. Pembelajaran/Insight</h3>
                   <ScrollArea className="h-auto w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-pembelajaran-insight">
-                    <p className="whitespace-pre-wrap leading-relaxed pb-2" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.pembelajaranInsight) }} />
+                    <p className="whitespace-pre-wrap leading-relaxed" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.pembelajaranInsight) }} />
                   </ScrollArea>
                 </div>
                 <div id="summary-section-kesimpulan">
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">5. Kesimpulan</h3>
                   <ScrollArea className="h-auto w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-kesimpulan">
-                    <p className="whitespace-pre-wrap leading-relaxed pb-2" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.kesimpulan) }} />
+                    <p className="whitespace-pre-wrap leading-relaxed" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.kesimpulan) }} />
                   </ScrollArea>
                 </div>
               </div>
