@@ -124,6 +124,8 @@ export default function TubeDigestPage() {
 
     if (!transcriptFetched) {
       setError(finalErrorForDisplay || "An unknown error occurred while fetching the transcript.");
+      setTranscript(''); // Ensure transcript is cleared if fetching ultimately fails
+      setSummary(null);   // Ensure summary is cleared
       return; 
     }
     
@@ -150,6 +152,7 @@ export default function TubeDigestPage() {
       });
     } catch (summaryError: any) {
       setError(summaryError.message);
+      setSummary(null); // Clear summary on error
       toast({
         title: "Summarization Error",
         description: summaryError.message,
@@ -161,7 +164,7 @@ export default function TubeDigestPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-start bg-background p-4 pt-8 sm:pt-12">
+    <div className="flex flex-col items-center justify-start bg-background p-4 sm:pt-12">
       <Card className="w-full max-w-2xl shadow-2xl rounded-lg" id="main-content-card">
         <CardHeader className="text-center">
           <div className="flex justify-center items-center mb-4">
@@ -210,28 +213,22 @@ export default function TubeDigestPage() {
           )}
 
           {transcript && !error && (
-            <Card className="shadow-lg" id="transcript-card">
-              <CardHeader>
-                <CardTitle className="flex items-center text-2xl font-headline">
-                  <FileTextIcon className="mr-3 h-6 w-6 text-primary" /> Transcript
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="h-64 w-full rounded-md border bg-muted/30 p-4" id="transcript-scroll-area">
-                  <p className="text-sm whitespace-pre-wrap leading-relaxed pb-4">{transcript}</p>
-                </ScrollArea>
-              </CardContent>
-            </Card>
+            <div id="transcript-section" className="space-y-3 pt-4">
+              <CardTitle className="flex items-center text-2xl font-headline">
+                <FileTextIcon className="mr-3 h-6 w-6 text-primary" /> Transcript
+              </CardTitle>
+              <ScrollArea className="h-64 w-full rounded-md border bg-muted/30 p-4" id="transcript-scroll-area">
+                <p className="text-sm whitespace-pre-wrap leading-relaxed pb-4">{transcript}</p>
+              </ScrollArea>
+            </div>
           )}
 
           {summary && typeof summary === 'object' && summary.topikUtama && !error && (
-            <Card className="shadow-lg" id="summary-card">
-              <CardHeader>
-                <CardTitle className="flex items-center text-2xl font-headline">
-                  <SparklesIcon className="mr-3 h-6 w-6 text-primary" /> Detail Ringkasan
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            <div id="summary-section" className="space-y-3 pt-4">
+              <CardTitle className="flex items-center text-2xl font-headline">
+                <SparklesIcon className="mr-3 h-6 w-6 text-primary" /> Detail Ringkasan
+              </CardTitle>
+              <div className="space-y-4">
                 <div id="summary-section-topik-utama">
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">1. Topik Utama</h3>
                   <ScrollArea className="h-auto w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-topik-utama">
@@ -262,8 +259,8 @@ export default function TubeDigestPage() {
                     <p className="whitespace-pre-wrap leading-relaxed pb-4" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.kesimpulan) }} />
                   </ScrollArea>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           )}
         </CardContent>
          <CardFooter className="text-center text-xs text-muted-foreground pt-6">
@@ -273,3 +270,5 @@ export default function TubeDigestPage() {
     </div>
   );
 }
+
+    
