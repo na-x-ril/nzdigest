@@ -147,7 +147,7 @@ export default function TubeDigestPage() {
 
   return (
     <div className="flex flex-col items-center justify-start min-h-screen bg-background p-4 pt-8 sm:pt-12">
-      <Card className="w-full max-w-2xl shadow-2xl rounded-lg">
+      <Card className="w-full max-w-2xl shadow-2xl rounded-lg" id="main-content-card">
         <CardHeader className="text-center">
           <div className="flex justify-center items-center mb-4">
             <YoutubeIcon className="h-16 w-16 text-primary" />
@@ -158,8 +158,9 @@ export default function TubeDigestPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="space-y-3">
+          <div className="space-y-3" id="url-input-section">
             <Input
+              id="youtube-url-input"
               type="url"
               placeholder="e.g. https://www.youtube.com/watch?v=dQw4w9WgXcQ"
               value={youtubeUrl}
@@ -169,6 +170,7 @@ export default function TubeDigestPage() {
               aria-label="YouTube URL"
             />
             <Button
+              id="digest-video-button"
               onClick={handleSubmit}
               disabled={!youtubeUrl || isLoadingTranscript || isLoadingSummary}
               className={cn(
@@ -185,7 +187,7 @@ export default function TubeDigestPage() {
           </div>
 
           {error && (
-            <Alert variant="destructive" className="shadow-md">
+            <Alert variant="destructive" className="shadow-md" id="error-alert-section">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
               <AlertDescription>{error}</AlertDescription>
@@ -193,14 +195,14 @@ export default function TubeDigestPage() {
           )}
 
           {transcript && !error && (
-            <Card className="shadow-lg">
+            <Card className="shadow-lg" id="transcript-card">
               <CardHeader>
                 <CardTitle className="flex items-center text-2xl font-headline">
                   <FileTextIcon className="mr-3 h-6 w-6 text-primary" /> Transcript
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <ScrollArea className="h-64 w-full rounded-md border bg-muted/30 p-4">
+                <ScrollArea className="h-64 w-full rounded-md border bg-muted/30 p-4" id="transcript-scroll-area">
                   <p className="text-sm whitespace-pre-wrap leading-relaxed pb-4">{transcript}</p>
                 </ScrollArea>
               </CardContent>
@@ -208,40 +210,40 @@ export default function TubeDigestPage() {
           )}
 
           {summary && typeof summary === 'object' && summary.topikUtama && !error && (
-            <Card className="shadow-lg">
+            <Card className="shadow-lg" id="summary-card">
               <CardHeader>
                 <CardTitle className="flex items-center text-2xl font-headline">
                   <SparklesIcon className="mr-3 h-6 w-6 text-primary" /> Detail Ringkasan
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
+                <div id="summary-section-topik-utama">
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">1. Topik Utama</h3>
-                  <ScrollArea className="h-auto max-h-48 w-full rounded-md border bg-muted/30 p-3 text-sm">
+                  <ScrollArea className="h-auto max-h-48 w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-topik-utama">
                     <p className="whitespace-pre-wrap leading-relaxed pb-4" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.topikUtama) }} />
                   </ScrollArea>
                 </div>
-                <div>
+                <div id="summary-section-kronologi-alur">
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">2. Kronologi/Alur</h3>
-                  <ScrollArea className="h-auto max-h-60 w-full rounded-md border bg-muted/30 p-3 text-sm">
+                  <ScrollArea className="h-auto max-h-60 w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-kronologi-alur">
                     <p className="whitespace-pre-wrap leading-relaxed pb-4" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.kronologiAlur) }} />
                   </ScrollArea>
                 </div>
-                <div>
+                <div id="summary-section-poin-kunci">
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">3. Poin-poin Kunci</h3>
-                  <ScrollArea className="h-auto max-h-72 w-full rounded-md border bg-muted/30 p-3 text-sm">
+                  <ScrollArea className="h-auto max-h-72 w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-poin-kunci">
                      <p className="whitespace-pre-wrap leading-relaxed pb-4" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.poinPoinKunci) }} />
                   </ScrollArea>
                 </div>
-                <div>
+                <div id="summary-section-pembelajaran-insight">
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">4. Pembelajaran/Insight</h3>
-                  <ScrollArea className="h-auto max-h-60 w-full rounded-md border bg-muted/30 p-3 text-sm">
+                  <ScrollArea className="h-auto max-h-60 w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-pembelajaran-insight">
                     <p className="whitespace-pre-wrap leading-relaxed pb-4" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.pembelajaranInsight) }} />
                   </ScrollArea>
                 </div>
-                <div>
+                <div id="summary-section-kesimpulan">
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">5. Kesimpulan</h3>
-                  <ScrollArea className="h-auto max-h-48 w-full rounded-md border bg-muted/30 p-3 text-sm">
+                  <ScrollArea className="h-auto max-h-48 w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-kesimpulan">
                     <p className="whitespace-pre-wrap leading-relaxed pb-4" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.kesimpulan) }} />
                   </ScrollArea>
                 </div>
