@@ -5,7 +5,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { YoutubeIcon, GithubIcon } from 'lucide-react';
+import { YoutubeIcon, GithubIcon, InfoIcon } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'TubeDigest - YouTube Summarizer',
@@ -49,7 +49,14 @@ export default function RootLayout({
                 <p className="text-center text-xs md:text-sm leading-loose text-muted-foreground md:text-left">
                   Built by Nazril.
                 </p>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-4">
+                  <Link
+                    href="/about"
+                    className="text-xs md:text-sm font-medium underline underline-offset-4 flex items-center gap-1"
+                  >
+                    <InfoIcon className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                    About
+                  </Link>
                   <a
                     href="https://github.com/na-x-ril/"
                     target="_blank"
