@@ -26,6 +26,12 @@ function formatSummaryText(text: string | undefined | null): string {
   return result;
 }
 
+const MAX_TRANSCRIPT_RETRIES = 5;
+const RETRY_DELAY_MS = 2000; // 2 seconds
+
+async function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 export default function TubeDigestPage() {
   const [youtubeUrl, setYoutubeUrl] = useState('');
@@ -52,63 +58,90 @@ export default function TubeDigestPage() {
     }
 
     setIsLoadingTranscript(true);
-    try {
-      const transcriptResponse = await fetch('/api/transcript', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: youtubeUrl }),
-      });
+    let transcriptFetched = false;
+    let transcriptData;
+    let lastTranscriptError: any = null;
 
-      const transcriptData = await transcriptResponse.json();
-
-      if (!transcriptResponse.ok) {
-        throw new Error(transcriptData.error || 'Failed to fetch transcript');
-      }
-      setTranscript(transcriptData.transcript);
-      toast({
-        title: "Transcript Fetched",
-        description: "Successfully fetched the video transcript.",
-      });
-
-      setIsLoadingTranscript(false);
-      setIsLoadingSummary(true);
-
+    for (let attempt = 1; attempt <= MAX_TRANSCRIPT_RETRIES; attempt++) {
       try {
-        const summaryResponse = await fetch('/api/summarize', {
+        toast({
+          title: "Fetching Transcript",
+          description: `Attempt ${attempt} of ${MAX_TRANSCRIPT_RETRIES}...`,
+        });
+        const transcriptResponse = await fetch('/api/transcript', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ transcript: transcriptData.transcript }),
+          body: JSON.stringify({ url: youtubeUrl }),
         });
 
-        const summaryData = await summaryResponse.json();
+        transcriptData = await transcriptResponse.json();
 
-        if (!summaryResponse.ok) {
-          throw new Error(summaryData.error || 'Failed to generate summary');
+        if (!transcriptResponse.ok) {
+          throw new Error(transcriptData.error || `Failed to fetch transcript (status: ${transcriptResponse.status})`);
         }
-        setSummary(summaryData);
+        setTranscript(transcriptData.transcript);
         toast({
-          title: "Summary Generated",
-          description: "Successfully generated the video summary.",
+          title: "Transcript Fetched",
+          description: "Successfully fetched the video transcript.",
         });
-      } catch (summaryError: any) {
-        setError(summaryError.message);
-        toast({
-          title: "Summarization Error",
-          description: summaryError.message,
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoadingSummary(false);
+        transcriptFetched = true;
+        lastTranscriptError = null; // Reset error on success
+        break; // Exit retry loop on success
+      } catch (e: any) {
+        lastTranscriptError = e;
+        setError(`Attempt ${attempt} failed: ${e.message}`);
+        if (attempt < MAX_TRANSCRIPT_RETRIES) {
+          toast({
+            title: "Transcript Fetch Failed",
+            description: `Attempt ${attempt} failed. Retrying in ${RETRY_DELAY_MS / 1000} seconds...`,
+            variant: "destructive",
+          });
+          await sleep(RETRY_DELAY_MS);
+        }
       }
+    }
 
-    } catch (transcriptError: any) {
-      setError(transcriptError.message);
+    setIsLoadingTranscript(false);
+
+    if (!transcriptFetched || !transcriptData?.transcript) {
+      const finalErrorMessage = lastTranscriptError?.message || 'Failed to fetch transcript after multiple retries.';
+      setError(finalErrorMessage);
       toast({
         title: "Transcript Error",
-        description: transcriptError.message,
+        description: finalErrorMessage,
         variant: "destructive",
       });
-      setIsLoadingTranscript(false);
+      return; // Stop if transcript fetching ultimately failed
+    }
+    
+    // Proceed to summarization only if transcript was successful
+    setIsLoadingSummary(true);
+    try {
+      const summaryResponse = await fetch('/api/summarize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ transcript: transcriptData.transcript }),
+      });
+
+      const summaryData = await summaryResponse.json();
+
+      if (!summaryResponse.ok) {
+        throw new Error(summaryData.error || 'Failed to generate summary');
+      }
+      setSummary(summaryData);
+      toast({
+        title: "Summary Generated",
+        description: "Successfully generated the video summary.",
+      });
+    } catch (summaryError: any) {
+      setError(summaryError.message);
+      toast({
+        title: "Summarization Error",
+        description: summaryError.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingSummary(false);
     }
   };
 
