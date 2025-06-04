@@ -17,21 +17,10 @@ function formatSummaryText(text: string | undefined | null): string {
 
   let result = text;
 
-  // Aturan 1: ```bahasa\n -> ``` (Menghapus penentu bahasa dari blok kode)
   result = result.replace(/```[a-zA-Z]+\n/g, '```');
-
-  // Aturan 2: **teks tebal** -> <strong>teks tebal</strong>
   result = result.replace(/\*\*(.*?)\*\*/g, (_match, p1) => `<strong>${p1}</strong>`);
-
-  // Aturan 3: *teks* -> <strong>teks</strong> (Juga membuat teks yang diapit bintang tunggal menjadi tebal)
-  // Ini akan cocok dengan pola seperti *kata* pada satu baris.
   result = result.replace(/\*(.*?)\*/g, (_match, p1) => `<strong>${p1}</strong>`);
-
-  // Aturan 4: ~teks coret~ -> <del>teks coret</del>
   result = result.replace(/~(.*?)~/g, (_match, p1) => `<del>${p1}</del>`);
-
-  // Aturan 5: ### Heading -> \t\`<strong>Heading</strong>\` (Tab literal, backtick, teks tebal, backtick)
-  // Dalam HTML, \t akan dirender sebagai spasi, dan backtick akan menjadi karakter literal.
   result = result.replace(/^### (.*)$/gm, (_match, p1) => `\t\`<strong>${p1}</strong>\``);
 
   return result;
@@ -179,7 +168,7 @@ export default function TubeDigestPage() {
               </CardHeader>
               <CardContent>
                 <ScrollArea className="h-64 w-full rounded-md border bg-muted/30 p-4">
-                  <p className="text-sm whitespace-pre-wrap leading-relaxed">{transcript}</p>
+                  <p className="text-sm whitespace-pre-wrap leading-relaxed pb-4">{transcript}</p>
                 </ScrollArea>
               </CardContent>
             </Card>
@@ -196,31 +185,31 @@ export default function TubeDigestPage() {
                 <div>
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">1. Topik Utama</h3>
                   <ScrollArea className="h-auto max-h-48 w-full rounded-md border bg-muted/30 p-3 text-sm">
-                    <p className="whitespace-pre-wrap leading-relaxed" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.topikUtama) }} />
+                    <p className="whitespace-pre-wrap leading-relaxed pb-4" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.topikUtama) }} />
                   </ScrollArea>
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">2. Kronologi/Alur</h3>
                   <ScrollArea className="h-auto max-h-60 w-full rounded-md border bg-muted/30 p-3 text-sm">
-                    <p className="whitespace-pre-wrap leading-relaxed" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.kronologiAlur) }} />
+                    <p className="whitespace-pre-wrap leading-relaxed pb-4" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.kronologiAlur) }} />
                   </ScrollArea>
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">3. Poin-poin Kunci</h3>
                   <ScrollArea className="h-auto max-h-72 w-full rounded-md border bg-muted/30 p-3 text-sm">
-                     <p className="whitespace-pre-wrap leading-relaxed" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.poinPoinKunci) }} />
+                     <p className="whitespace-pre-wrap leading-relaxed pb-4" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.poinPoinKunci) }} />
                   </ScrollArea>
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">4. Pembelajaran/Insight</h3>
                   <ScrollArea className="h-auto max-h-60 w-full rounded-md border bg-muted/30 p-3 text-sm">
-                    <p className="whitespace-pre-wrap leading-relaxed" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.pembelajaranInsight) }} />
+                    <p className="whitespace-pre-wrap leading-relaxed pb-4" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.pembelajaranInsight) }} />
                   </ScrollArea>
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">5. Kesimpulan</h3>
                   <ScrollArea className="h-auto max-h-48 w-full rounded-md border bg-muted/30 p-3 text-sm">
-                    <p className="whitespace-pre-wrap leading-relaxed" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.kesimpulan) }} />
+                    <p className="whitespace-pre-wrap leading-relaxed pb-4" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.kesimpulan) }} />
                   </ScrollArea>
                 </div>
               </CardContent>
