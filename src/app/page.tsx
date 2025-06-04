@@ -8,11 +8,13 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader2, YoutubeIcon, FileTextIcon, SparklesIcon, AlertCircle } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from "@/hooks/use-toast";
+import type { SummarizeTranscriptOutput } from '@/ai/flows/summarize-transcript-flow';
+import { cn } from '@/lib/utils';
 
 export default function TubeDigestPage() {
   const [youtubeUrl, setYoutubeUrl] = useState('');
   const [transcript, setTranscript] = useState('');
-  const [summary, setSummary] = useState('');
+  const [summary, setSummary] = useState<SummarizeTranscriptOutput | null>(null);
   const [isLoadingTranscript, setIsLoadingTranscript] = useState(false);
   const [isLoadingSummary, setIsLoadingSummary] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +23,7 @@ export default function TubeDigestPage() {
   const handleSubmit = async () => {
     setError(null);
     setTranscript('');
-    setSummary('');
+    setSummary(null);
 
     if (!youtubeUrl) {
       setError("Please enter a YouTube URL.");
@@ -67,7 +69,7 @@ export default function TubeDigestPage() {
         if (!summaryResponse.ok) {
           throw new Error(summaryData.error || 'Failed to generate summary');
         }
-        setSummary(summaryData.summary);
+        setSummary(summaryData); // summaryData is now the structured object
         toast({
           title: "Summary Generated",
           description: "Successfully generated the video summary.",
@@ -120,7 +122,10 @@ export default function TubeDigestPage() {
             <Button
               onClick={handleSubmit}
               disabled={!youtubeUrl || isLoadingTranscript || isLoadingSummary}
-              className="w-full h-12 text-lg"
+              className={cn(
+                "w-full h-12 text-lg",
+                (isLoadingTranscript || isLoadingSummary) && "ai-animated-button-style"
+              )}
               size="lg"
             >
               {(isLoadingTranscript || isLoadingSummary) ? (
@@ -153,17 +158,44 @@ export default function TubeDigestPage() {
             </Card>
           )}
 
-          {summary && !error && (
+          {summary && typeof summary === 'object' && summary.topikUtama && !error && (
             <Card className="shadow-lg">
               <CardHeader>
                 <CardTitle className="flex items-center text-2xl font-headline">
-                  <SparklesIcon className="mr-3 h-6 w-6 text-primary" /> Summary
+                  <SparklesIcon className="mr-3 h-6 w-6 text-primary" /> Detail Ringkasan
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                 <ScrollArea className="h-48 w-full rounded-md border bg-muted/30 p-4">
-                    <p className="text-sm whitespace-pre-wrap leading-relaxed">{summary}</p>
-                 </ScrollArea>
+              <CardContent className="space-y-4">
+                <div>
+                  <h3 className="font-semibold text-lg mb-2 text-foreground/90">1. Topik Utama</h3>
+                  <ScrollArea className="h-auto max-h-48 w-full rounded-md border bg-muted/30 p-3 text-sm">
+                    <p className="whitespace-pre-wrap leading-relaxed">{summary.topikUtama}</p>
+                  </ScrollArea>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg mb-2 text-foreground/90">2. Kronologi/Alur</h3>
+                  <ScrollArea className="h-auto max-h-60 w-full rounded-md border bg-muted/30 p-3 text-sm">
+                    <p className="whitespace-pre-wrap leading-relaxed">{summary.kronologiAlur}</p>
+                  </ScrollArea>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg mb-2 text-foreground/90">3. Poin-poin Kunci</h3>
+                  <ScrollArea className="h-auto max-h-72 w-full rounded-md border bg-muted/30 p-3 text-sm">
+                    <p className="whitespace-pre-wrap leading-relaxed">{summary.poinPoinKunci}</p>
+                  </ScrollArea>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg mb-2 text-foreground/90">4. Pembelajaran/Insight</h3>
+                  <ScrollArea className="h-auto max-h-60 w-full rounded-md border bg-muted/30 p-3 text-sm">
+                    <p className="whitespace-pre-wrap leading-relaxed">{summary.pembelajaranInsight}</p>
+                  </ScrollArea>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg mb-2 text-foreground/90">5. Kesimpulan</h3>
+                  <ScrollArea className="h-auto max-h-48 w-full rounded-md border bg-muted/30 p-3 text-sm">
+                    <p className="whitespace-pre-wrap leading-relaxed">{summary.kesimpulan}</p>
+                  </ScrollArea>
+                </div>
               </CardContent>
             </Card>
           )}

@@ -88,10 +88,33 @@ export default {
             height: '0',
           },
         },
+        'ai-colors-animation': {
+          '0%, 100%': {
+            backgroundColor: 'hsl(210, 80%, 60%)',
+            borderColor: 'hsl(210, 80%, 50%)',
+            color: 'hsl(0, 0%, 100%)',
+          },
+          '25%': {
+            backgroundColor: 'hsl(240, 70%, 65%)',
+            borderColor: 'hsl(240, 70%, 55%)',
+            color: 'hsl(0, 0%, 100%)',
+          },
+          '50%': {
+            backgroundColor: 'hsl(180, 70%, 55%)',
+            borderColor: 'hsl(180, 70%, 45%)',
+            color: 'hsl(0, 0%, 0%)',
+          },
+          '75%': {
+            backgroundColor: 'hsl(270, 70%, 65%)',
+            borderColor: 'hsl(270, 70%, 55%)',
+            color: 'hsl(0, 0%, 100%)',
+          },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'ai-colors': 'ai-colors-animation 4s infinite linear',
       },
     },
   },

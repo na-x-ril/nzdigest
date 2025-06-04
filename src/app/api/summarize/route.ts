@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { summarizeTranscript, type SummarizeTranscriptInput } from '@/ai/flows/summarize-transcript-flow';
+import { summarizeTranscript, type SummarizeTranscriptInput, type SummarizeTranscriptOutput } from '@/ai/flows/summarize-transcript-flow';
 
 export async function POST(request: Request) {
   try {
@@ -15,13 +15,13 @@ export async function POST(request: Request) {
     }
 
     const input: SummarizeTranscriptInput = { transcript };
-    const result = await summarizeTranscript(input);
+    const result: SummarizeTranscriptOutput = await summarizeTranscript(input);
 
-    if (!result || !result.summary) {
-        return NextResponse.json({ error: 'Failed to generate summary content from AI.' }, { status: 500 });
+    if (!result || !result.topikUtama) { // Check for a key field from the new structure
+        return NextResponse.json({ error: 'Failed to generate summary content from AI or unexpected format.' }, { status: 500 });
     }
 
-    return NextResponse.json({ summary: result.summary });
+    return NextResponse.json(result); // Return the entire structured object
   } catch (error: any) {
     console.error('Error generating summary:', error);
     let message = 'Failed to generate summary.';
