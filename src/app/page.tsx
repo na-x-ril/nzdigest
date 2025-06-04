@@ -219,7 +219,7 @@ export default function TubeDigestPage() {
               <CardContent className="space-y-4">
                 <div id="summary-section-topik-utama">
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">1. Topik Utama</h3>
-                  <ScrollArea className="h-auto max-h-48 w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-topik-utama">
+                  <ScrollArea className="h-auto w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-topik-utama">
                     <p className="whitespace-pre-wrap leading-relaxed pb-4" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.topikUtama) }} />
                   </ScrollArea>
                 </div>
@@ -231,19 +231,19 @@ export default function TubeDigestPage() {
                 </div>
                 <div id="summary-section-poin-kunci">
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">3. Poin-poin Kunci</h3>
-                  <ScrollArea className="h-auto max-h-72 w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-poin-kunci">
+                  <ScrollArea className="h-auto w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-poin-kunci">
                      <p className="whitespace-pre-wrap leading-relaxed pb-4" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.poinPoinKunci) }} />
                   </ScrollArea>
                 </div>
                 <div id="summary-section-pembelajaran-insight">
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">4. Pembelajaran/Insight</h3>
-                  <ScrollArea className="h-auto max-h-60 w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-pembelajaran-insight">
+                  <ScrollArea className="h-auto w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-pembelajaran-insight">
                     <p className="whitespace-pre-wrap leading-relaxed pb-4" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.pembelajaranInsight) }} />
                   </ScrollArea>
                 </div>
                 <div id="summary-section-kesimpulan">
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">5. Kesimpulan</h3>
-                  <ScrollArea className="h-auto max-h-48 w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-kesimpulan">
+                  <ScrollArea className="h-auto w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-kesimpulan">
                     <p className="whitespace-pre-wrap leading-relaxed pb-4" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.kesimpulan) }} />
                   </ScrollArea>
                 </div>
@@ -258,4 +258,3 @@ export default function TubeDigestPage() {
     </div>
   );
 }
-
