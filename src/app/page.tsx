@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -10,6 +11,32 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from "@/hooks/use-toast";
 import type { SummarizeTranscriptOutput } from '@/ai/flows/summarize-transcript-flow';
 import { cn } from '@/lib/utils';
+
+function formatSummaryText(text: string | undefined | null): string {
+  if (!text) return '';
+
+  let result = text;
+
+  // Aturan 1: ```bahasa\n -> ``` (Menghapus penentu bahasa dari blok kode)
+  result = result.replace(/```[a-zA-Z]+\n/g, '```');
+
+  // Aturan 2: **teks tebal** -> <strong>teks tebal</strong>
+  result = result.replace(/\*\*(.*?)\*\*/g, (_match, p1) => `<strong>${p1}</strong>`);
+
+  // Aturan 3: *teks* -> <strong>teks</strong> (Juga membuat teks yang diapit bintang tunggal menjadi tebal)
+  // Ini akan cocok dengan pola seperti *kata* pada satu baris.
+  result = result.replace(/\*(.*?)\*/g, (_match, p1) => `<strong>${p1}</strong>`);
+
+  // Aturan 4: ~teks coret~ -> <del>teks coret</del>
+  result = result.replace(/~(.*?)~/g, (_match, p1) => `<del>${p1}</del>`);
+
+  // Aturan 5: ### Heading -> \t\`<strong>Heading</strong>\` (Tab literal, backtick, teks tebal, backtick)
+  // Dalam HTML, \t akan dirender sebagai spasi, dan backtick akan menjadi karakter literal.
+  result = result.replace(/^### (.*)$/gm, (_match, p1) => `\t\`<strong>${p1}</strong>\``);
+
+  return result;
+}
+
 
 export default function TubeDigestPage() {
   const [youtubeUrl, setYoutubeUrl] = useState('');
@@ -69,7 +96,7 @@ export default function TubeDigestPage() {
         if (!summaryResponse.ok) {
           throw new Error(summaryData.error || 'Failed to generate summary');
         }
-        setSummary(summaryData); // summaryData is now the structured object
+        setSummary(summaryData);
         toast({
           title: "Summary Generated",
           description: "Successfully generated the video summary.",
@@ -169,31 +196,31 @@ export default function TubeDigestPage() {
                 <div>
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">1. Topik Utama</h3>
                   <ScrollArea className="h-auto max-h-48 w-full rounded-md border bg-muted/30 p-3 text-sm">
-                    <p className="whitespace-pre-wrap leading-relaxed">{summary.topikUtama}</p>
+                    <p className="whitespace-pre-wrap leading-relaxed" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.topikUtama) }} />
                   </ScrollArea>
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">2. Kronologi/Alur</h3>
                   <ScrollArea className="h-auto max-h-60 w-full rounded-md border bg-muted/30 p-3 text-sm">
-                    <p className="whitespace-pre-wrap leading-relaxed">{summary.kronologiAlur}</p>
+                    <p className="whitespace-pre-wrap leading-relaxed" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.kronologiAlur) }} />
                   </ScrollArea>
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">3. Poin-poin Kunci</h3>
                   <ScrollArea className="h-auto max-h-72 w-full rounded-md border bg-muted/30 p-3 text-sm">
-                    <p className="whitespace-pre-wrap leading-relaxed">{summary.poinPoinKunci}</p>
+                     <p className="whitespace-pre-wrap leading-relaxed" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.poinPoinKunci) }} />
                   </ScrollArea>
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">4. Pembelajaran/Insight</h3>
                   <ScrollArea className="h-auto max-h-60 w-full rounded-md border bg-muted/30 p-3 text-sm">
-                    <p className="whitespace-pre-wrap leading-relaxed">{summary.pembelajaranInsight}</p>
+                    <p className="whitespace-pre-wrap leading-relaxed" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.pembelajaranInsight) }} />
                   </ScrollArea>
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">5. Kesimpulan</h3>
                   <ScrollArea className="h-auto max-h-48 w-full rounded-md border bg-muted/30 p-3 text-sm">
-                    <p className="whitespace-pre-wrap leading-relaxed">{summary.kesimpulan}</p>
+                    <p className="whitespace-pre-wrap leading-relaxed" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.kesimpulan) }} />
                   </ScrollArea>
                 </div>
               </CardContent>
