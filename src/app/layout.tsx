@@ -44,8 +44,8 @@ export default function RootLayout({
               </div>
             </header>
             <main className="flex-1">{children}</main>
-            <footer className="py-4 md:py-6 border-t">
-              <div className="container flex flex-col items-center justify-between gap-2 md:h-16 md:flex-row">
+            <footer className="py-4 md:py-6 border-t flex justify-center">
+              <div className="w-[80%] mx-auto flex flex-col items-center justify-between gap-2 md:h-16 md:flex-row">
                 <p className="text-center text-xs md:text-sm leading-loose text-muted-foreground md:text-left">
                   Built by Nazril.
                 </p>

@@ -124,8 +124,8 @@ export default function TubeDigestPage() {
 
     if (!transcriptFetched) {
       setError(finalErrorForDisplay || "An unknown error occurred while fetching the transcript.");
-      setTranscript(''); // Ensure transcript is cleared if fetching ultimately fails
-      setSummary(null);   // Ensure summary is cleared
+      setTranscript(''); 
+      setSummary(null);   
       return; 
     }
     
@@ -152,7 +152,7 @@ export default function TubeDigestPage() {
       });
     } catch (summaryError: any) {
       setError(summaryError.message);
-      setSummary(null); // Clear summary on error
+      setSummary(null); 
       toast({
         title: "Summarization Error",
         description: summaryError.message,
@@ -175,7 +175,7 @@ export default function TubeDigestPage() {
             Enter a YouTube URL to get its transcript and a concise AI-powered summary.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4">
           <div className="space-y-3" id="url-input-section">
             <Input
               id="youtube-url-input"
@@ -232,43 +232,42 @@ export default function TubeDigestPage() {
                 <div id="summary-section-topik-utama">
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">1. Topik Utama</h3>
                   <ScrollArea className="h-auto w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-topik-utama">
-                    <p className="whitespace-pre-wrap leading-relaxed pb-4" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.topikUtama) }} />
+                    <p className="whitespace-pre-wrap leading-relaxed pb-2" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.topikUtama) }} />
                   </ScrollArea>
                 </div>
                 <div id="summary-section-kronologi-alur">
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">2. Kronologi/Alur</h3>
                   <ScrollArea className="h-auto w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-kronologi-alur">
-                    <p className="whitespace-pre-wrap leading-relaxed pb-4" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.kronologiAlur) }} />
+                    <p className="whitespace-pre-wrap leading-relaxed pb-2" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.kronologiAlur) }} />
                   </ScrollArea>
                 </div>
                 <div id="summary-section-poin-kunci">
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">3. Poin-poin Kunci</h3>
                   <ScrollArea className="h-auto w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-poin-kunci">
-                     <p className="whitespace-pre-wrap leading-relaxed pb-4" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.poinPoinKunci) }} />
+                     <p className="whitespace-pre-wrap leading-relaxed pb-2" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.poinPoinKunci) }} />
                   </ScrollArea>
                 </div>
                 <div id="summary-section-pembelajaran-insight">
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">4. Pembelajaran/Insight</h3>
                   <ScrollArea className="h-auto w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-pembelajaran-insight">
-                    <p className="whitespace-pre-wrap leading-relaxed pb-4" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.pembelajaranInsight) }} />
+                    <p className="whitespace-pre-wrap leading-relaxed pb-2" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.pembelajaranInsight) }} />
                   </ScrollArea>
                 </div>
                 <div id="summary-section-kesimpulan">
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">5. Kesimpulan</h3>
                   <ScrollArea className="h-auto w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-kesimpulan">
-                    <p className="whitespace-pre-wrap leading-relaxed pb-4" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.kesimpulan) }} />
+                    <p className="whitespace-pre-wrap leading-relaxed pb-2" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.kesimpulan) }} />
                   </ScrollArea>
                 </div>
               </div>
             </div>
           )}
         </CardContent>
-         <CardFooter className="text-center text-xs text-muted-foreground pt-6">
+         <CardFooter className="text-center text-xs text-muted-foreground pt-4">
           <p>Powered by AI. Summaries are for informational purposes and may not always be perfect.</p>
         </CardFooter>
       </Card>
     </div>
   );
 }
-
     
