@@ -175,8 +175,8 @@ export default function TubeDigestPage() {
             Enter a YouTube URL to get its transcript and a concise AI-powered summary.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-3" id="url-input-section">
+        <CardContent className="space-y-2 px-6 pt-0 pb-2">
+          <div className="space-y-3 pt-6" id="url-input-section"> {/* Added pt-6 here to maintain original top padding of CardContent */}
             <Input
               id="youtube-url-input"
               type="url"
@@ -238,7 +238,7 @@ export default function TubeDigestPage() {
                 <div id="summary-section-kronologi-alur">
                   <h3 className="font-semibold text-lg mb-2 text-foreground/90">2. Kronologi/Alur</h3>
                   <ScrollArea className="h-auto w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-kronologi-alur">
-                    <p className="whitespace-pre-wrap leading-relaxed pb-2" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.kronologiAlur) }} />
+                    <p className="whitespace-pre-wrap leading-relaxed pb-0" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.kronologiAlur) }} />
                   </ScrollArea>
                 </div>
                 <div id="summary-section-poin-kunci">
@@ -270,4 +270,6 @@ export default function TubeDigestPage() {
     </div>
   );
 }
+    
+
     
