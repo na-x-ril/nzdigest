@@ -78,27 +78,26 @@ export default function TubeDigestPage() {
 
         if (!transcriptResponse.ok) {
           const errorMessage = responseBody.error || `Failed to fetch transcript (status: ${transcriptResponse.status})`;
-          // Jangan retry jika format URL tidak valid
+          
           if (errorMessage.includes('Invalid YouTube URL format.')) {
             finalErrorForDisplay = errorMessage;
-            transcriptFetched = false;
+            transcriptFetched = false; 
             break; 
           }
-          throw new Error(errorMessage); // Lemparkan error lain untuk memicu retry
+          throw new Error(errorMessage); 
         }
         
-        // Sukses mengambil transkrip
         fetchedTranscriptContent = responseBody.transcript;
         transcriptFetched = true;
-        finalErrorForDisplay = null; // Hapus error dari percobaan sebelumnya jika berhasil
+        finalErrorForDisplay = null; 
         toast({
           title: "Transcript Fetched",
           description: "Successfully fetched the video transcript.",
         });
-        break; // Keluar dari loop retry jika berhasil
+        break; 
       } catch (e: any) {
         finalErrorForDisplay = e.message;
-        // Jika error spesifik mengenai format URL muncul di catch block (misal karena error jaringan sebelum parsing JSON)
+        
         if (e.message && e.message.includes('Invalid YouTube URL format.')) {
             transcriptFetched = false;
             break; 
@@ -112,7 +111,6 @@ export default function TubeDigestPage() {
           });
           await sleep(RETRY_DELAY_MS);
         } else {
-          // Percobaan terakhir gagal
           toast({
             title: "Transcript Error",
             description: `Failed to fetch transcript after ${attempt} attempts: ${finalErrorForDisplay}`,
@@ -129,11 +127,9 @@ export default function TubeDigestPage() {
       return; 
     }
     
-    // Jika transkrip berhasil diambil, pastikan state error bersih dan set transkrip
     setError(null); 
     setTranscript(fetchedTranscriptContent);
     
-    // Lanjutkan ke ringkasan hanya jika transkrip berhasil
     setIsLoadingSummary(true);
     try {
       const summaryResponse = await fetch('/api/summarize', {
@@ -165,7 +161,7 @@ export default function TubeDigestPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-screen bg-background p-4 pt-8 sm:pt-12">
+    <div className="flex flex-col items-center justify-start bg-background p-4 pt-8 sm:pt-12">
       <Card className="w-full max-w-2xl shadow-2xl rounded-lg" id="main-content-card">
         <CardHeader className="text-center">
           <div className="flex justify-center items-center mb-4">
@@ -277,5 +273,3 @@ export default function TubeDigestPage() {
     </div>
   );
 }
-
-    
