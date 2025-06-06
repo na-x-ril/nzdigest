@@ -119,11 +119,11 @@ Mohon berikan ringkasan dalam format JSON di atas. Jangan awali respons Anda den
             content: `Tolong ringkas transkrip berikut sesuai dengan instruksi dan format JSON yang telah diberikan:\n\n${input.transcript}`,
           },
         ],
-        model: input.modelName, // e.g., "llama3-70b-8192"
+        model: input.modelName,
         temperature: 0.3,
         max_tokens: 4000,
         top_p: 0.8,
-        response_format: { type: "json_object" }, // Enforce JSON mode
+        response_format: { type: "json_object" },
         stream: false,
       });
 
@@ -138,7 +138,6 @@ Mohon berikan ringkasan dalam format JSON di atas. Jangan awali respons Anda den
       console.log("Raw content string from Groq choice:", rawContent);
       const parsedOutput = cleanAndParseJson(rawContent);
 
-      // Validate with Zod schema
       const validationResult = SummarizeTranscriptOutputSchema.safeParse(parsedOutput);
       if (!validationResult.success) {
         console.error("Groq output failed Zod validation:", validationResult.error.errors);
