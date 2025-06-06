@@ -28,7 +28,7 @@ export const SummarizeTranscriptBaseInputSchema = z.object({
 });
 export type SummarizeTranscriptBaseInput = z.infer<typeof SummarizeTranscriptBaseInputSchema>;
 
-// Schema for Gemini model input (doesn't need modelName as it's often set in Genkit config)
+// Schema for Gemini model input (doesn't need modelName as it's often set in Genkit config or the flow)
 export const SummarizeTranscriptGeminiInputSchema = SummarizeTranscriptBaseInputSchema;
 export type SummarizeTranscriptGeminiInput = z.infer<typeof SummarizeTranscriptGeminiInputSchema>;
 

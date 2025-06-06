@@ -17,15 +17,26 @@ import { useModel, type Model } from "@/contexts/ModelContext"; // Ensure type M
 
 export function ModelSelectorDropdown() {
   const { selectedModel, setSelectedModel } = useModel();
+ 
+  // Define the new model values
+  const llama4Scout = 'meta-llama/llama-4-scout-17b-16e-instruct' as const;
+  const deepseekR1 = 'deepseek-r1-distill-llama-70b' as const;
+  const qwenQwq = 'qwen-qwq-32b' as const;
 
-  const modelDisplayNames: Record<Model, string> = {
+  const modelDisplayNames = {
     "gemini-flash": "Gemini Flash (Genkit)",
     "llama3-groq": "LLaMA3 (Groq)",
+    [llama4Scout]: "LLaMA 4 Scout (Groq)", // Using variable for key
+    [deepseekR1]: "Deepseek R1 (Groq)",
+    [qwenQwq]: "Qwen QWQ (Groq)",
   };
 
-  const modelIcons: Record<Model, React.ElementType> = {
+  const modelIcons = {
     "gemini-flash": ZapIcon,
     "llama3-groq": BrainCircuitIcon,
+    [llama4Scout]: BrainCircuitIcon,
+    [deepseekR1]: BrainCircuitIcon,
+    [qwenQwq]: BrainCircuitIcon,
   };
 
   const CurrentModelIcon = modelIcons[selectedModel];
@@ -53,6 +64,18 @@ export function ModelSelectorDropdown() {
           <DropdownMenuRadioItem value="llama3-groq" className="flex items-center gap-2.5 cursor-pointer py-2">
             <BrainCircuitIcon className="h-4 w-4 text-primary" />
             <span>LLaMA3 (Groq)</span>
+          </DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value={llama4Scout} className="flex items-center gap-2.5 cursor-pointer py-2">
+            <BrainCircuitIcon className="h-4 w-4 text-primary" />
+            <span>{modelDisplayNames[llama4Scout]}</span>
+          </DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value={deepseekR1} className="flex items-center gap-2.5 cursor-pointer py-2">
+            <BrainCircuitIcon className="h-4 w-4 text-primary" />
+            <span>{modelDisplayNames[deepseekR1]}</span>
+          </DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value={qwenQwq} className="flex items-center gap-2.5 cursor-pointer py-2">
+            <BrainCircuitIcon className="h-4 w-4 text-primary" />
+            <span>{modelDisplayNames[qwenQwq]}</span>
           </DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>

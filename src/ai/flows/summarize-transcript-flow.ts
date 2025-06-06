@@ -20,57 +20,62 @@ const groq = new Groq({
 
 // Helper to clean and parse JSON, potentially wrapped in markdown
 function cleanAndParseJson(jsonString: string): any {
-  console.log("Attempting to clean and parse JSON. Raw string:", jsonString);
+  console.log("[Groq Flow] Attempting to clean and parse JSON. Raw string received:", jsonString.substring(0, 500) + (jsonString.length > 500 ? "..." : ""));
 
   let cleanedString = jsonString.trim();
 
   // Remove potential markdown code block fences (```json ... ``` or ``` ... ```)
   if (cleanedString.startsWith("```json")) {
     cleanedString = cleanedString.substring(7, cleanedString.length - 3).trim();
-  } else if (cleanedString.startsWith("```")) {
+    console.log("[Groq Flow] Removed ```json wrapper. String now:", cleanedString.substring(0, 200) + "...");
+  } else if (cleanedString.startsWith("```") && cleanedString.endsWith("```")) {
     cleanedString = cleanedString.substring(3, cleanedString.length - 3).trim();
+    console.log("[Groq Flow] Removed ``` wrapper. String now:", cleanedString.substring(0, 200) + "...");
   }
 
   // If not a valid JSON object, try to extract content between first { and last }
   if (!cleanedString.startsWith("{") || !cleanedString.endsWith("}")) {
-    console.warn("Cleaned string does not appear to be a simple JSON object. Attempting to extract from first '{' to last '}'. Original cleaned string:", cleanedString);
+    console.warn("[Groq Flow] Cleaned string does not appear to be a simple JSON object. Attempting to extract from first '{' to last '}'. Current cleaned string:", cleanedString.substring(0,200) + "...");
     const firstBrace = cleanedString.indexOf("{");
     const lastBrace = cleanedString.lastIndexOf("}");
     if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
       cleanedString = cleanedString.substring(firstBrace, lastBrace + 1);
-      console.log("Substring extraction result:", cleanedString);
+      console.log("[Groq Flow] Substring extraction result:", cleanedString.substring(0,200) + "...");
     } else {
-      console.error("Could not find valid JSON structure for substring extraction.");
+      console.error("[Groq Flow] Could not find valid JSON structure for substring extraction. Original cleaned string fragment:", cleanedString.substring(0,200) + "...");
       // Fallback or throw error if even substring extraction fails
+      throw new Error(`Could not extract a valid JSON object from the AI response. Content started with: ${cleanedString.substring(0, 50)}...`);
     }
   }
 
-  console.log("String after cleaning, before parsing:", cleanedString);
+  console.log("[Groq Flow] String after all cleaning, before parsing:", cleanedString.substring(0, 500) + (cleanedString.length > 500 ? "..." : ""));
   try {
     const parsed = JSON.parse(cleanedString);
-    console.log("Successfully parsed JSON:", parsed);
+    console.log("[Groq Flow] Successfully parsed JSON.");
     return parsed;
   } catch (e: any) {
-    console.error("Failed to parse JSON even after cleaning. Error:", e.message, "String was:", cleanedString);
+    console.error("[Groq Flow] Failed to parse JSON even after cleaning. Error:", e.message, "String was:", cleanedString.substring(0, 500) + (cleanedString.length > 500 ? "..." : ""));
     throw new Error(`Failed to parse JSON response from AI: ${e.message}. Attempted to parse: ${cleanedString.substring(0, 200)}...`);
   }
 }
 
 
 export async function summarizeTranscript(input: SummarizeTranscriptGroqInput): Promise<SummarizeTranscriptOutput> {
-  console.log("Groq summarizeTranscript called with input:", input);
-  if (!input.modelName) {
+  console.log("[Groq Flow] summarizeTranscript called with input:", JSON.stringify(input));
+  if (!input.modelName || typeof input.modelName !== 'string' || input.modelName.trim() === '') {
+    console.error("[Groq Flow] Error: Groq model name is required and must be a non-empty string. Received:", input.modelName);
     throw new Error("Groq model name is required.");
   }
   try {
     const result = await summarizeTranscriptFlow(input);
     if (!result || typeof result !== 'object' || !result.topikUtama) {
-        console.error("Groq flow returned invalid or empty result:", result);
+        console.error("[Groq Flow] Flow returned invalid or empty result:", result);
         throw new Error('Failed to generate summary content from Groq AI or unexpected format.');
     }
+    console.log("[Groq Flow] summarizeTranscript returning successfully.");
     return result;
   } catch (error: any) {
-    console.error("Error in Groq summarizeTranscript:", error);
+    console.error("[Groq Flow] Error in summarizeTranscript:", error);
     throw new Error(`Groq summarization failed: ${error.message}`);
   }
 }
@@ -82,9 +87,9 @@ const summarizeTranscriptFlow = ai.defineFlow(
     outputSchema: SummarizeTranscriptOutputSchema,
   },
   async (input) => {
-    console.log("Groq summarizeTranscriptFlow started with input:", input);
+    console.log("[Groq Flow] summarizeTranscriptFlow started with input:", JSON.stringify(input));
     if (!process.env.GROQ_API_KEY) {
-      console.error("GROQ_API_KEY is not set.");
+      console.error("[Groq Flow] GROQ_API_KEY is not set.");
       throw new Error("GROQ_API_KEY environment variable is not set.");
     }
 
@@ -107,7 +112,7 @@ ${input.transcript}
 Mohon berikan ringkasan dalam format JSON di atas. Jangan awali respons Anda dengan frasa seperti "Berikut adalah ringkasan...". Langsung ke objek JSON. Berikan contoh spesifik dari transkrip jika relevan untuk memperjelas poin.`;
 
     try {
-      console.log(`Making Groq API call with model: ${input.modelName}`);
+      console.log(`[Groq Flow] Making Groq API call with model: ${input.modelName}`);
       const chatCompletion = await groq.chat.completions.create({
         messages: [
           {
@@ -120,38 +125,38 @@ Mohon berikan ringkasan dalam format JSON di atas. Jangan awali respons Anda den
           },
         ],
         model: input.modelName,
-        temperature: 0.3,
+        temperature: 0.7,
         max_tokens: 4000,
         top_p: 0.8,
-        response_format: { type: "json_object" },
+        response_format: { type: "json_object" }, // Ensure JSON mode
         stream: false,
       });
 
-      console.log("Raw response from Groq API:", JSON.stringify(chatCompletion, null, 2));
+      console.log("[Groq Flow] Raw response from Groq API:", JSON.stringify(chatCompletion).substring(0, 500) + (JSON.stringify(chatCompletion).length > 500 ? "..." : ""));
 
       const rawContent = chatCompletion.choices[0]?.message?.content;
       if (!rawContent) {
-        console.error("No content in Groq API response choice.");
+        console.error("[Groq Flow] No content in Groq API response choice.");
         throw new Error('No content returned from Groq AI.');
       }
 
-      console.log("Raw content string from Groq choice:", rawContent);
+      console.log("[Groq Flow] Raw content string from Groq choice:", rawContent.substring(0, 500) + (rawContent.length > 500 ? "..." : ""));
       const parsedOutput = cleanAndParseJson(rawContent);
 
       const validationResult = SummarizeTranscriptOutputSchema.safeParse(parsedOutput);
       if (!validationResult.success) {
-        console.error("Groq output failed Zod validation:", validationResult.error.errors);
-        console.error("Data that failed validation:", parsedOutput);
+        console.error("[Groq Flow] Output failed Zod validation:", validationResult.error.errors);
+        console.error("[Groq Flow] Data that failed validation:", parsedOutput);
         throw new Error(`Groq AI output did not match expected schema: ${validationResult.error.message}`);
       }
 
-      console.log("Groq flow successfully processed and validated output.");
+      console.log("[Groq Flow] Flow successfully processed and validated output.");
       return validationResult.data;
 
-    } catch (error: any) {
-      console.error('Error during Groq API call or processing:', error.message, error.stack);
+    } catch (error: any)      
+      console.error('[Groq Flow] Error during Groq API call or processing:', error.message, error.stack);
       if (error.response) {
-        console.error('Groq API Error Response:', error.response.data);
+        console.error('[Groq Flow] Groq API Error Response:', error.response.data);
       }
       throw new Error(`Failed to get summary from Groq: ${error.message}`);
     }
