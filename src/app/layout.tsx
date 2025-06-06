@@ -5,7 +5,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Logo } from '@/components/Logo'; // Changed from YoutubeIcon
+import { Logo } from '@/components/Logo';
 import { GithubIcon, InfoIcon } from 'lucide-react';
 import { ModelProvider } from '@/contexts/ModelContext';
 import { ModelSelectorDropdown } from '@/components/ModelSelectorDropdown';
@@ -40,7 +40,7 @@ export default function RootLayout({
                 <div className="w-[80%] mx-auto flex h-14 items-center justify-between">
                   <div className="flex items-center space-x-4"> {/* Increased space-x for better separation */}
                     <Link href="/" className="flex items-center space-x-2">
-                      <Logo className="h-6 w-6 text-primary" /> {/* Used new Logo component */}
+                      <Logo className="h-10 w-10 text-primary" /> {/* Used new Logo component */}
                       <span className="font-bold text-lg">TubeDigest</span>
                     </Link>
                     <ModelSelectorDropdown />

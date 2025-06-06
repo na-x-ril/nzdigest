@@ -6,12 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2, YoutubeIcon, FileTextIcon, SparklesIcon, AlertCircle, ListChecksIcon, KeyIcon, LightbulbIcon, CheckSquareIcon } from 'lucide-react';
+import { Loader2, FileTextIcon, SparklesIcon, AlertCircle, ListChecksIcon, KeyIcon, LightbulbIcon, CheckSquareIcon } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from "@/hooks/use-toast";
 import type { SummarizeTranscriptOutput } from '@/ai/schemas/transcript-summary-schemas';
 import { cn } from '@/lib/utils';
 import { useModel } from '@/contexts/ModelContext';
+import { Logo } from '@/components/Logo';
 
 function formatSummaryText(text: string | undefined | null): string {
   if (!text) return '';
@@ -222,7 +223,7 @@ export default function TubeDigestPage() {
       <Card className="w-full max-w-2xl shadow-2xl rounded-lg" id="main-content-card">
         <CardHeader className="text-center">
           <div className="flex justify-center items-center mb-4">
-            <YoutubeIcon className="h-16 w-16 text-primary" />
+            <Logo className="h-16 w-16 text-primary" />
           </div>
           <CardTitle className="text-4xl font-headline tracking-tight">TubeDigest</CardTitle>
           <CardDescription className="text-lg">
