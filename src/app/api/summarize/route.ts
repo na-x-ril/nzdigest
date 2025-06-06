@@ -3,19 +3,19 @@ import { NextResponse } from 'next/server';
 import {
   summarizeTranscript as summarizeTranscriptGroq,
   type SummarizeTranscriptGroqInput,
-  type SummarizeTranscriptOutput
 } from '@/ai/flows/summarize-transcript-flow';
 import {
   summarizeTranscriptGemini,
   type SummarizeTranscriptGeminiInput,
 } from '@/ai/flows/summarize-transcript-gemini-flow';
+import type { SummarizeTranscriptOutput } from '@/ai/schemas/transcript-summary-schemas';
 import type { Model } from '@/contexts/ModelContext';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     const transcript = body.transcript;
-    const selectedModelFromRequest = body.model as Model; // Cast here, validation below
+    const selectedModelFromRequest = body.model as Model; 
 
     console.log(`[API /api/summarize] Received request. Transcript length: ${transcript?.length}, Model: ${selectedModelFromRequest}`);
     console.log(`[API /api/summarize] Full body received:`, JSON.stringify(body));
@@ -46,13 +46,12 @@ export async function POST(request: Request) {
       console.log("[API /api/summarize] Input for Gemini:", JSON.stringify(inputForGemini).substring(0, 200) + "...");
       result = await summarizeTranscriptGemini(inputForGemini);
     } else if (
-      selectedModelFromRequest === "llama3-groq" ||
-      selectedModelFromRequest === "meta-llama/llama-4-scout-17b-16e-instruct" || // Exact Groq model names
+      selectedModelFromRequest === "llama3-70b-8192" || // Updated to correct Groq LLaMA3 model ID
+      selectedModelFromRequest === "meta-llama/llama-4-scout-17b-16e-instruct" ||
       selectedModelFromRequest === "deepseek-r1-distill-llama-70b" ||
       selectedModelFromRequest === "qwen-qwq-32b"
     ) {
       console.log(`[API /api/summarize] Using Groq model: '${selectedModelFromRequest}' for summarization`);
-      // Ensure the modelName being passed to Groq flow matches exactly what Groq expects.
       const inputForGroq: SummarizeTranscriptGroqInput = { transcript, modelName: selectedModelFromRequest };
       console.log("[API /api/summarize] Input for Groq:", JSON.stringify(inputForGroq).substring(0, 200) + "...");
       result = await summarizeTranscriptGroq(inputForGroq);
