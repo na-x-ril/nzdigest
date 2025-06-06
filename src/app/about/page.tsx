@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { YoutubeIcon, BrainCircuitIcon, LightbulbIcon } from 'lucide-react';
+import { YoutubeIcon, BrainCircuitIcon, LightbulbIcon } from 'lucide-react'; // YoutubeIcon might be less relevant now
 
 export default function AboutPage() {
   return (
@@ -8,22 +8,23 @@ export default function AboutPage() {
       <Card className="shadow-lg rounded-lg">
         <CardHeader className="text-center">
           <div className="flex justify-center items-center mb-4">
-            <YoutubeIcon className="h-16 w-16 text-primary" />
+            {/* Consider a more generic icon or the new NZD logo if appropriate here */}
+            <BrainCircuitIcon className="h-16 w-16 text-primary" /> 
           </div>
-          <CardTitle className="text-4xl font-headline tracking-tight">About TubeDigest</CardTitle>
+          <CardTitle className="text-4xl font-headline tracking-tight">About NZDigest</CardTitle>
           <CardDescription className="text-lg text-muted-foreground mt-2">
             Unlocking insights from YouTube videos, one summary at a time.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6 text-foreground/90">
-          <section aria-labelledby="what-is-tubedigest">
-            <h2 id="what-is-tubedigest" className="text-2xl font-semibold mb-3 flex items-center">
+          <section aria-labelledby="what-is-nzdigest">
+            <h2 id="what-is-nzdigest" className="text-2xl font-semibold mb-3 flex items-center">
               <LightbulbIcon className="mr-2 h-6 w-6 text-primary" />
-              What is TubeDigest?
+              What is NZDigest?
             </h2>
             <p className="leading-relaxed">
-              TubeDigest is an AI-powered web application designed to help you quickly understand the content of YouTube videos.
-              Whether you're a student, researcher, or just curious, TubeDigest provides video transcripts and detailed, structured summaries
+              NZDigest is an AI-powered web application designed to help you quickly understand the content of YouTube videos.
+              Whether you're a student, researcher, or just curious, NZDigest provides video transcripts and detailed, structured summaries
               to save you time and highlight key information.
             </p>
           </section>
@@ -34,7 +35,7 @@ export default function AboutPage() {
               How It Works
             </h2>
             <p className="leading-relaxed">
-              Simply paste a YouTube video URL into TubeDigest. The application will:
+              Simply paste a YouTube video URL into NZDigest. The application will:
             </p>
             <ul className="list-disc list-inside space-y-1 pl-4 mt-2">
               <li>Fetch the video's transcript if available.</li>
@@ -61,7 +62,7 @@ export default function AboutPage() {
               Technology
             </h2>
             <p className="leading-relaxed">
-              TubeDigest is built with a modern tech stack including:
+              NZDigest is built with a modern tech stack including:
             </p>
             <ul className="list-disc list-inside space-y-1 pl-4 mt-2">
               <li>Next.js for the frontend and backend framework.</li>

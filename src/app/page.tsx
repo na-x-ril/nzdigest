@@ -55,7 +55,7 @@ async function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export default function TubeDigestPage() {
+export default function NZDigestPage() {
   const [youtubeUrl, setYoutubeUrl] = useState('');
   const [transcript, setTranscript] = useState('');
   const [summary, setSummary] = useState<SummarizeTranscriptOutput | null>(null);
@@ -107,7 +107,7 @@ export default function TubeDigestPage() {
       });
       return; 
     }
-    console.log(`[TubeDigestPage] Using model for API calls: '${selectedModel}'`);
+    console.log(`[NZDigestPage] Using model for API calls: '${selectedModel}'`);
 
 
     setIsLoadingTranscript(true);
@@ -186,7 +186,7 @@ export default function TubeDigestPage() {
     setTranscript(fetchedTranscriptContent);
     
     setIsLoadingSummary(true);
-    console.log(`[TubeDigestPage] Attempting to call /api/summarize with model: '${selectedModel}' and transcript length: ${fetchedTranscriptContent.length}`);
+    console.log(`[NZDigestPage] Attempting to call /api/summarize with model: '${selectedModel}' and transcript length: ${fetchedTranscriptContent.length}`);
 
     try {
       const summaryResponse = await fetch('/api/summarize', {
@@ -223,9 +223,9 @@ export default function TubeDigestPage() {
       <Card className="w-full max-w-2xl shadow-2xl rounded-lg" id="main-content-card">
         <CardHeader className="text-center">
           <div className="flex justify-center items-center">
-            <Logo className="h-21 w-24 text-primary" />
+            <Logo className="h-24 w-24 text-primary" />
           </div>
-          <CardTitle className="text-4xl font-headline tracking-tight">TubeDigest</CardTitle>
+          <CardTitle className="text-4xl font-headline tracking-tight">NZDigest</CardTitle>
           <CardDescription className="text-lg">
             Enter a YouTube URL to get its transcript and a concise AI-powered summary.
           </CardDescription>
@@ -360,5 +360,3 @@ export default function TubeDigestPage() {
     </div>
   );
 }
-
-    

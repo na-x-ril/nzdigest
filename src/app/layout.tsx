@@ -11,7 +11,7 @@ import { ModelProvider } from '@/contexts/ModelContext';
 import { ModelSelectorDropdown } from '@/components/ModelSelectorDropdown';
 
 export const metadata: Metadata = {
-  title: 'TubeDigest - YouTube Summarizer',
+  title: 'NZDigest - YouTube Summarizer',
   description: 'Get transcripts and AI-powered summaries for YouTube videos.',
 };
 
@@ -42,7 +42,7 @@ export default function RootLayout({
                   <div className="flex items-center space-x-4"> {/* Increased space-x for better separation */}
                     <Link href="/" className="flex items-center space-x-2">
                       <Logo className="h-10 w-10 text-primary" />
-                      <span className="font-bold text-lg">TubeDigest</span>
+                      <span className="font-bold text-lg">NZDigest</span>
                     </Link>
                     <ModelSelectorDropdown />
                   </div>
@@ -59,7 +59,7 @@ export default function RootLayout({
                       Built by Nazril.
                     </p>
                     <p className="text-xs md:text-sm leading-loose text-muted-foreground">
-                      © {currentYear} TubeDigest. All rights reserved.
+                      © {currentYear} NZDigest. All rights reserved.
                     </p>
                   </div>
                   <div className="flex items-center gap-4">
