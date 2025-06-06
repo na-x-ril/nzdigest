@@ -20,6 +20,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const currentYear = new Date().getFullYear();
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -40,7 +41,7 @@ export default function RootLayout({
                 <div className="w-[80%] mx-auto flex h-14 items-center justify-between">
                   <div className="flex items-center space-x-4"> {/* Increased space-x for better separation */}
                     <Link href="/" className="flex items-center space-x-2">
-                      <Logo className="h-10 w-10 text-primary" /> {/* Used new Logo component */}
+                      <Logo className="h-10 w-10 text-primary" />
                       <span className="font-bold text-lg">TubeDigest</span>
                     </Link>
                     <ModelSelectorDropdown />
@@ -53,9 +54,14 @@ export default function RootLayout({
               <main className="flex-1">{children}</main>
               <footer className="py-4 md:py-6 border-t flex justify-center">
                 <div className="w-[80%] mx-auto flex flex-col items-center justify-between gap-2 md:h-16 md:flex-row">
-                  <p className="text-center text-xs md:text-sm leading-loose text-muted-foreground md:text-left">
-                    Built by Nazril.
-                  </p>
+                  <div className="text-center md:text-left">
+                    <p className="text-xs md:text-sm leading-loose text-muted-foreground">
+                      Built by Nazril.
+                    </p>
+                    <p className="text-xs md:text-sm leading-loose text-muted-foreground">
+                      © {currentYear} TubeDigest. All rights reserved.
+                    </p>
+                  </div>
                   <div className="flex items-center gap-4">
                     <Link
                       href="/about"

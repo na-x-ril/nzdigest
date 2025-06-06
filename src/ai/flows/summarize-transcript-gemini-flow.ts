@@ -77,10 +77,9 @@ Transkrip Video:
 
 Mohon berikan ringkasan dalam format JSON seperti contoh di atas. Jangan awali respons Anda dengan frasa seperti "Berikut adalah ringkasan...". Langsung ke objek JSON. Pastikan semua string dalam JSON di-escape dengan benar. Berikan contoh spesifik dari transkrip jika relevan untuk memperjelas poin. Output harus berupa objek JSON tunggal yang valid.`,
   config: {
-    // model: 'googleai/gemini-1.5-flash-latest', // Removed to use global default
     temperature: 0.3,
     topP: 0.8,
-    maxOutputTokens: 4000,
+    maxOutputTokens: 12000,
     responseMimeType: 'application/json',
     safetySettings: [
       { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
