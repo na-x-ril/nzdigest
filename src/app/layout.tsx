@@ -6,6 +6,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { YoutubeIcon, GithubIcon, InfoIcon } from 'lucide-react';
+import { ModelProvider } from '@/contexts/ModelContext';
+import { ModelSelectorDropdown } from '@/components/ModelSelectorDropdown';
 
 export const metadata: Metadata = {
   title: 'TubeDigest - YouTube Summarizer',
@@ -31,45 +33,50 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="relative flex min-h-screen flex-col">
-            <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex justify-center items-center">
-              <div className="w-[80%] mx-auto flex h-14 items-center justify-between">
-                <Link href="/" className="flex items-center space-x-2">
-                  <YoutubeIcon className="h-6 w-6 text-primary" />
-                  <span className="font-bold text-lg">TubeDigest</span>
-                </Link>
-                <div className="flex items-center space-x-2">
-                  <ThemeToggle />
+          <ModelProvider>
+            <div className="relative flex min-h-screen flex-col">
+              <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex justify-center items-center">
+                <div className="w-[80%] mx-auto flex h-14 items-center justify-between">
+                  <div className="flex items-center space-x-4"> {/* Increased space-x for better separation */}
+                    <Link href="/" className="flex items-center space-x-2">
+                      <YoutubeIcon className="h-6 w-6 text-primary" />
+                      <span className="font-bold text-lg">TubeDigest</span>
+                    </Link>
+                    <ModelSelectorDropdown />
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <ThemeToggle />
+                  </div>
                 </div>
-              </div>
-            </header>
-            <main className="flex-1">{children}</main>
-            <footer className="py-4 md:py-6 border-t flex justify-center">
-              <div className="w-[80%] mx-auto flex flex-col items-center justify-between gap-2 md:h-16 md:flex-row">
-                <p className="text-center text-xs md:text-sm leading-loose text-muted-foreground md:text-left">
-                  Built by Nazril.
-                </p>
-                <div className="flex items-center gap-4">
-                  <Link
-                    href="/about"
-                    className="text-xs md:text-sm font-medium underline underline-offset-4 flex items-center gap-1"
-                  >
-                    <InfoIcon className="h-3.5 w-3.5 md:h-4 md:w-4" />
-                    About
-                  </Link>
-                  <a
-                    href="https://github.com/na-x-ril/"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-xs md:text-sm font-medium underline underline-offset-4 flex items-center gap-1"
-                  >
-                    <GithubIcon className="h-3.5 w-3.5 md:h-4 md:w-4" />
-                    GitHub
-                  </a>
+              </header>
+              <main className="flex-1">{children}</main>
+              <footer className="py-4 md:py-6 border-t flex justify-center">
+                <div className="w-[80%] mx-auto flex flex-col items-center justify-between gap-2 md:h-16 md:flex-row">
+                  <p className="text-center text-xs md:text-sm leading-loose text-muted-foreground md:text-left">
+                    Built by Nazril.
+                  </p>
+                  <div className="flex items-center gap-4">
+                    <Link
+                      href="/about"
+                      className="text-xs md:text-sm font-medium underline underline-offset-4 flex items-center gap-1"
+                    >
+                      <InfoIcon className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                      About
+                    </Link>
+                    <a
+                      href="https://github.com/na-x-ril/"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs md:text-sm font-medium underline underline-offset-4 flex items-center gap-1"
+                    >
+                      <GithubIcon className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                      GitHub
+                    </a>
+                  </div>
                 </div>
-              </div>
-            </footer>
-          </div>
+              </footer>
+            </div>
+          </ModelProvider>
           <Toaster />
         </ThemeProvider>
       </body>
