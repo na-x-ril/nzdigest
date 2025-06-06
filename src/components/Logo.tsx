@@ -12,7 +12,7 @@ export function Logo(props: SVGProps<SVGSVGElement>) {
     >
       <text
         x="2"
-        y="46" // Adjusted y for better vertical centering with Inter font
+        y="43" // Adjusted y for better vertical centering with Inter font
         fontFamily="Inter, sans-serif, Arial" // Added Arial as a common fallback
         fontSize="42" // Slightly adjusted font size for balance
         fontWeight="bold"
@@ -22,7 +22,7 @@ export function Logo(props: SVGProps<SVGSVGElement>) {
       </text>
       <text
         x="26" // Adjusted x for D positioning
-        y="46" // Adjusted y for better vertical centering
+        y="43" // Adjusted y for better vertical centering
         fontFamily="Inter, sans-serif, Arial"
         fontSize="42"
         fontWeight="bold"
