@@ -11,7 +11,13 @@ export default function AboutPage() {
             {/* Consider a more generic icon or the new NZD logo if appropriate here */}
             <BrainCircuitIcon className="h-16 w-16 text-primary" /> 
           </div>
-          <CardTitle className="text-4xl font-headline tracking-tight">About NZDigest</CardTitle>
+          <CardTitle className="flex justify-center text-4xl font-headline tracking-tight gap-2">
+            <span>About</span>
+            <span className="font-headline text-4xl text-primary">
+              <span style={{ letterSpacing: '-0.125em' }}>NZD</span>
+              <span className="ml-[4px] text-primary">igest</span>
+            </span>
+          </CardTitle>
           <CardDescription className="text-lg text-muted-foreground mt-2">
             Unlocking insights from YouTube videos, one summary at a time.
           </CardDescription>

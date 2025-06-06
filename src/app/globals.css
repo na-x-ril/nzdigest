@@ -110,29 +110,33 @@ body {
 
 @layer components {
   .ai-animated-button-style {
-    animation: ai-colors-animation 4s infinite linear;
+    animation: ai-colors-animation 6s infinite linear;
   }
 }
 
 @keyframes ai-colors-animation {
   0%, 100% {
-    background-color: hsl(210, 80%, 60%); /* Brighter Blue */
+    background: linear-gradient(135deg, hsl(210, 80%, 60%), hsl(220, 80%, 70%));
     border-color: hsl(210, 80%, 50%);
     color: hsl(0, 0%, 100%);
+    box-shadow: 0 0 15px hsl(210, 80%, 60%);
   }
   25% {
-    background-color: hsl(240, 70%, 65%); /* Purple */
+    background: linear-gradient(135deg, hsl(240, 70%, 65%), hsl(250, 70%, 75%));
     border-color: hsl(240, 70%, 55%);
     color: hsl(0, 0%, 100%);
+    box-shadow: 0 0 15px hsl(240, 70%, 65%);
   }
   50% {
-    background-color: hsl(180, 70%, 55%); /* Teal */
+    background: linear-gradient(135deg, hsl(180, 70%, 55%), hsl(170, 70%, 65%));
     border-color: hsl(180, 70%, 45%);
-    color: hsl(0, 0%, 0%); /* Ensure text contrast with teal */
+    color: hsl(0, 0%, 10%); /* Better readability on teal */
+    box-shadow: 0 0 15px hsl(180, 70%, 55%);
   }
   75% {
-    background-color: hsl(270, 70%, 65%); /* Violet */
+    background: linear-gradient(135deg, hsl(270, 70%, 65%), hsl(280, 70%, 75%));
     border-color: hsl(270, 70%, 55%);
     color: hsl(0, 0%, 100%);
+    box-shadow: 0 0 15px hsl(270, 70%, 65%);
   }
 }

@@ -222,11 +222,14 @@ export default function NZDigestPage() {
       <Card className="w-full max-w-2xl shadow-2xl rounded-lg" id="main-content-card">
         <CardHeader className="text-center">
           <div className="flex justify-center items-center my-4"> {/* Added margin-top/bottom for spacing */}
-            <h1 className="text-7xl font-bold text-primary" style={{ letterSpacing: '-0.075em' }}>
+            <h1 className="text-7xl font-bold text-primary" style={{ letterSpacing: '-0.120em' }}>
               NZD
             </h1>
           </div>
-          <CardTitle className="text-4xl font-headline tracking-tight">NZDigest</CardTitle>
+          <span className="font-bold text-4xl text-primary">
+            <span style={{ letterSpacing: '-0.120em' }}>NZD</span>
+            <span className="ml-[4px] text-primary">igest</span>
+          </span>
           <CardDescription className="text-lg">
             Enter a YouTube URL to get its transcript and a concise AI-powered summary.
           </CardDescription>

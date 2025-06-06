@@ -40,9 +40,9 @@ export default function RootLayout({
                 <div className="w-[80%] mx-auto flex h-14 items-center justify-between">
                   <div className="flex items-center space-x-4">
                     <Link href="/" className="flex items-center space-x-0"> {/* Adjusted space-x-2 to space-x-0 or fine-tune */}
-                      <span className="font-bold text-lg text-primary">
-                        <span style={{ letterSpacing: '-0.075em' }}>NZD</span>
-                        <span>igest</span>
+                      <span className="font-bold text-2xl text-primary">
+                        <span style={{ letterSpacing: '-0.120em' }}>NZD</span>
+                        <span className="ml-[2px] text-primary">igest</span>
                       </span>
                     </Link>
                     <ModelSelectorDropdown />
