@@ -12,7 +12,6 @@ import { useToast } from "@/hooks/use-toast";
 import type { SummarizeTranscriptOutput } from '@/ai/schemas/transcript-summary-schemas';
 import { cn } from '@/lib/utils';
 import { useModel } from '@/contexts/ModelContext';
-import { Logo } from '@/components/Logo'; // Logo component will now render "NZDigest"
 
 function formatSummaryText(text: string | undefined | null): string {
   if (!text) return '';
@@ -222,8 +221,10 @@ export default function NZDigestPage() {
     <div className="flex flex-col items-center justify-start bg-background p-4 sm:pt-12">
       <Card className="w-full max-w-2xl shadow-2xl rounded-lg" id="main-content-card">
         <CardHeader className="text-center">
-          <div className="flex justify-center items-center">
-            <Logo className="h-24 w-24 text-primary" /> {/* This will now render "NZDigest" text via SVG */}
+          <div className="flex justify-center items-center my-4"> {/* Added margin-top/bottom for spacing */}
+            <h1 className="text-7xl font-bold text-primary" style={{ letterSpacing: '-0.075em' }}>
+              NZD
+            </h1>
           </div>
           <CardTitle className="text-4xl font-headline tracking-tight">NZDigest</CardTitle>
           <CardDescription className="text-lg">
