@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,36 +18,36 @@ function formatSummaryText(text: string | undefined | null): string {
 
   let result = text;
 
-  result = result.replace(/```[a-zA-Z]+\n/g, '```'); // Basic code block cleanup
-  result = result.replace(/\*\*(.*?)\*\*/g, (_match, p1) => `<strong>${p1}</strong>`); // Bold with **
-  result = result.replace(/\*(.*?)\*/g, (_match, p1) => `<em>${p1}</em>`); // Italics with * (changed from strong to em for differentiation)
-  result = result.replace(/~(.*?)~/g, (_match, p1) => `<del>${p1}</del>`); // Strikethrough
-  result = result.replace(/^### (.*)$/gm, (_match, p1) => `<h3>${p1}</h3>`); // H3
-  result = result.replace(/^## (.*)$/gm, (_match, p1) => `<h2>${p1}</h2>`); // H2
-  result = result.replace(/^# (.*)$/gm, (_match, p1) => `<h1>${p1}</h1>`); // H1
+  result = result.replace(/```[a-zA-Z]+\n/g, '```'); 
+  result = result.replace(/\*\*(.*?)\*\*/g, (_match, p1) => `<strong>${p1}</strong>`); 
+  result = result.replace(/\*(.*?)\*/g, (_match, p1) => `<em>${p1}</em>`); 
+  result = result.replace(/~(.*?)~/g, (_match, p1) => `<del>${p1}</del>`); 
+  result = result.replace(/^### (.*)$/gm, (_match, p1) => `<h3>${p1}</h3>`); 
+  result = result.replace(/^## (.*)$/gm, (_match, p1) => `<h2>${p1}</h2>`); 
+  result = result.replace(/^# (.*)$/gm, (_match, p1) => `<h1>${p1}</h1>`); 
   
-  // Handle simple markdown lists (unordered)
+  
   result = result.replace(/^\s*[-*+]\s+(.*)/gm, (_match, p1) => `<li>${p1}</li>`);
-  // Wrap sets of <li> in <ul>, this is a bit naive and might need refinement for complex cases
+  
   if (result.includes("<li>")) {
       result = `<ul>${result.replace(/<\/li>\s*<li>/g, '</li><li>')}</ul>`;
-      // Clean up potential empty <ul> or <ul><li></li></ul> which might result from regex
+      
       result = result.replace(/<ul>\s*<\/ul>/g, '');
   }
   
-  // Handle simple markdown lists (ordered)
+  
   result = result.replace(/^\s*\d+\.\s+(.*)/gm, (_match, p1) => `<li class="ml-4">${p1}</li>`);
    if (result.includes('<li class="ml-4">')) {
        result = `<ol>${result.replace(/<\/li>\s*<li class="ml-4">/g, '</li><li class="ml-4">')}</ol>`;
        result = result.replace(/<ol>\s*<\/ol>/g, '');
    }
 
-  result = result.replace(/\n/g, '<br />'); // Replace newlines with <br /> for HTML display
+  result = result.replace(/\n/g, '<br />'); 
 
   return result;
 }
 
-const MAX_TRANSCRIPT_RETRIES = 3; // Reduced for faster feedback during debugging
+const MAX_TRANSCRIPT_RETRIES = 3; 
 const RETRY_DELAY_MS = 1500; 
 
 async function sleep(ms: number) {
@@ -63,6 +63,21 @@ export default function TubeDigestPage() {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const { selectedModel } = useModel();
+  const urlInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    urlInputRef.current?.focus();
+  }, []);
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      const isButtonDisabled = !youtubeUrl || isLoadingTranscript || isLoadingSummary;
+      if (!isButtonDisabled) {
+        event.preventDefault();
+        handleSubmit();
+      }
+    }
+  };
 
   const handleSubmit = async () => {
     setError(null);
@@ -79,7 +94,7 @@ export default function TubeDigestPage() {
       return;
     }
 
-    // Client-side validation for selectedModel BEFORE any API call
+    
     if (!selectedModel || typeof selectedModel !== 'string' || selectedModel.trim().length === 0) {
       const clientErrorMsg = `Client-side: Invalid AI model selected. Value: '${selectedModel}', Type: ${typeof selectedModel}. Please select a model.`;
       console.error(clientErrorMsg);
@@ -217,11 +232,13 @@ export default function TubeDigestPage() {
         <CardContent className="space-y-2 px-6 pt-0 pb-2">
           <div className="space-y-3 pt-6" id="url-input-section">
             <Input
+              ref={urlInputRef}
               id="youtube-url-input"
               type="url"
               placeholder="e.g. https://www.youtube.com/watch?v=dQw4w9WgXcQ"
               value={youtubeUrl}
               onChange={(e) => setYoutubeUrl(e.target.value)}
+              onKeyDown={handleKeyDown}
               disabled={isLoadingTranscript || isLoadingSummary}
               className="text-base h-12 px-4"
               aria-label="YouTube URL"
@@ -272,7 +289,7 @@ export default function TubeDigestPage() {
                 <h3 className="font-semibold text-lg flex items-center text-foreground/90">
                   <SparklesIcon className="mr-2 h-5 w-5 text-primary/80" />Topik Utama
                 </h3>
-                <ScrollArea className="h-auto max-h-60 w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-topik-utama">
+                <ScrollArea className="w-full rounded-md border bg-muted/30 p-4 text-sm" id="summary-scroll-area-topik-utama">
                   <p className="whitespace-pre-wrap leading-relaxed" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.topikUtama) }} />
                 </ScrollArea>
               </div>
@@ -282,7 +299,7 @@ export default function TubeDigestPage() {
                   <h3 className="font-semibold text-lg flex items-center text-foreground/90">
                     <ListChecksIcon className="mr-2 h-5 w-5 text-primary/80" />Kronologi/Alur
                   </h3>
-                  <ScrollArea className="h-auto max-h-72 w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-kronologi-alur">
+                  <ScrollArea className="w-full rounded-md border bg-muted/30 p-4 text-sm" id="summary-scroll-area-kronologi-alur">
                     <ul className="list-disc space-y-1.5 pl-5">
                       {summary.kronologiAlur.map((item, index) => (
                         <li key={`kronologi-${index}`} dangerouslySetInnerHTML={{ __html: formatSummaryText(item) }} />
@@ -297,12 +314,14 @@ export default function TubeDigestPage() {
                   <h3 className="font-semibold text-lg flex items-center text-foreground/90">
                     <KeyIcon className="mr-2 h-5 w-5 text-primary/80" />Poin-poin Kunci
                   </h3>
-                  <ScrollArea className="h-auto max-h-96 w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-poin-kunci">
+                  <ScrollArea className="w-full rounded-md border bg-muted/30 p-4 text-sm" id="summary-scroll-area-poin-kunci">
                     <div className="space-y-3">
                       {summary.poinPoinKunci.map((item, index) => (
                         <div key={`poin-${index}`} className="rounded-md border border-border/50 p-2.5 bg-background/30">
-                          {item.judul && <h4 className="font-medium text-foreground/95 mb-1" dangerouslySetInnerHTML={{ __html: formatSummaryText(item.judul) }} />}
-                          {item.penjelasan && <p className="whitespace-pre-wrap leading-relaxed text-foreground/80" dangerouslySetInnerHTML={{ __html: formatSummaryText(item.penjelasan) }} />}
+                          <p className="whitespace-pre-wrap leading-relaxed text-foreground/80">
+                            {item.judul && <strong className="text-foreground/95" dangerouslySetInnerHTML={{ __html: formatSummaryText(item.judul) + ": " }} />}
+                            {item.penjelasan && <span dangerouslySetInnerHTML={{ __html: formatSummaryText(item.penjelasan) }} />}
+                          </p>
                         </div>
                       ))}
                     </div>
@@ -315,12 +334,14 @@ export default function TubeDigestPage() {
                   <h3 className="font-semibold text-lg flex items-center text-foreground/90">
                     <LightbulbIcon className="mr-2 h-5 w-5 text-primary/80" />Pembelajaran/Insight
                   </h3>
-                  <ScrollArea className="h-auto max-h-96 w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-pembelajaran-insight">
+                  <ScrollArea className="w-full rounded-md border bg-muted/30 p-4 text-sm" id="summary-scroll-area-pembelajaran-insight">
                      <div className="space-y-3">
                       {summary.pembelajaranInsight.map((item, index) => (
                         <div key={`insight-${index}`} className="rounded-md border border-border/50 p-2.5 bg-background/30">
-                          {item.judul && <h4 className="font-medium text-foreground/95 mb-1" dangerouslySetInnerHTML={{ __html: formatSummaryText(item.judul) }} />}
-                          {item.penjelasan && <p className="whitespace-pre-wrap leading-relaxed text-foreground/80" dangerouslySetInnerHTML={{ __html: formatSummaryText(item.penjelasan) }} />}
+                           <p className="whitespace-pre-wrap leading-relaxed text-foreground/80">
+                            {item.judul && <strong className="text-foreground/95" dangerouslySetInnerHTML={{ __html: formatSummaryText(item.judul) + ": " }} />}
+                            {item.penjelasan && <span dangerouslySetInnerHTML={{ __html: formatSummaryText(item.penjelasan) }} />}
+                          </p>
                         </div>
                       ))}
                     </div>
@@ -332,7 +353,7 @@ export default function TubeDigestPage() {
                 <h3 className="font-semibold text-lg flex items-center text-foreground/90">
                   <CheckSquareIcon className="mr-2 h-5 w-5 text-primary/80" />Kesimpulan
                 </h3>
-                <ScrollArea className="h-auto max-h-60 w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-kesimpulan">
+                <ScrollArea className="w-full rounded-md border bg-muted/30 p-4 text-sm" id="summary-scroll-area-kesimpulan">
                   <p className="whitespace-pre-wrap leading-relaxed" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.kesimpulan) }} />
                 </ScrollArea>
               </div>
