@@ -315,16 +315,14 @@ export default function TubeDigestPage() {
                     <KeyIcon className="mr-2 h-5 w-5 text-primary/80" />Poin-poin Kunci
                   </h3>
                   <ScrollArea className="w-full rounded-md border bg-muted/30 p-4 text-sm" id="summary-scroll-area-poin-kunci">
-                    <div className="space-y-3">
-                      {summary.poinPoinKunci.map((item, index) => (
-                        <div key={`poin-${index}`} className="rounded-md border border-border/50 p-2.5 bg-background/30">
-                          <p className="whitespace-pre-wrap leading-relaxed text-foreground/80">
-                            {item.judul && <strong className="text-foreground/95" dangerouslySetInnerHTML={{ __html: formatSummaryText(item.judul) + ": " }} />}
-                            {item.penjelasan && <span dangerouslySetInnerHTML={{ __html: formatSummaryText(item.penjelasan) }} />}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
+                    {summary.poinPoinKunci.map((item, index) => (
+                      <div key={`poin-${index}`} className="rounded-md border border-border/50 p-2.5 bg-background/30 mb-3 last:mb-0">
+                        <p className="whitespace-pre-wrap leading-relaxed text-foreground/80">
+                          {item.judul && <strong className="text-foreground/95" dangerouslySetInnerHTML={{ __html: formatSummaryText(item.judul) + ": " }} />}
+                          {item.penjelasan && <span dangerouslySetInnerHTML={{ __html: formatSummaryText(item.penjelasan) }} />}
+                        </p>
+                      </div>
+                    ))}
                   </ScrollArea>
                 </div>
               )}
@@ -335,16 +333,14 @@ export default function TubeDigestPage() {
                     <LightbulbIcon className="mr-2 h-5 w-5 text-primary/80" />Pembelajaran/Insight
                   </h3>
                   <ScrollArea className="w-full rounded-md border bg-muted/30 p-4 text-sm" id="summary-scroll-area-pembelajaran-insight">
-                     <div className="space-y-3">
-                      {summary.pembelajaranInsight.map((item, index) => (
-                        <div key={`insight-${index}`} className="rounded-md border border-border/50 p-2.5 bg-background/30">
-                           <p className="whitespace-pre-wrap leading-relaxed text-foreground/80">
-                            {item.judul && <strong className="text-foreground/95" dangerouslySetInnerHTML={{ __html: formatSummaryText(item.judul) + ": " }} />}
-                            {item.penjelasan && <span dangerouslySetInnerHTML={{ __html: formatSummaryText(item.penjelasan) }} />}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
+                    {summary.pembelajaranInsight.map((item, index) => (
+                      <div key={`insight-${index}`} className="rounded-md border border-border/50 p-2.5 bg-background/30 mb-3 last:mb-0">
+                         <p className="whitespace-pre-wrap leading-relaxed text-foreground/80">
+                          {item.judul && <strong className="text-foreground/95" dangerouslySetInnerHTML={{ __html: formatSummaryText(item.judul) + ": " }} />}
+                          {item.penjelasan && <span dangerouslySetInnerHTML={{ __html: formatSummaryText(item.penjelasan) }} />}
+                        </p>
+                      </div>
+                    ))}
                   </ScrollArea>
                 </div>
               )}
