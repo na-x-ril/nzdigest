@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2, YoutubeIcon, FileTextIcon, SparklesIcon, AlertCircle } from 'lucide-react';
+import { Loader2, YoutubeIcon, FileTextIcon, SparklesIcon, AlertCircle, ListChecksIcon, KeyIcon, LightbulbIcon, CheckSquareIcon } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from "@/hooks/use-toast";
 import type { SummarizeTranscriptOutput } from '@/ai/schemas/transcript-summary-schemas';
@@ -18,17 +18,37 @@ function formatSummaryText(text: string | undefined | null): string {
 
   let result = text;
 
-  result = result.replace(/```[a-zA-Z]+\n/g, '```');
-  result = result.replace(/\*\*(.*?)\*\*/g, (_match, p1) => `<strong>${p1}</strong>`);
-  result = result.replace(/\*(.*?)\*/g, (_match, p1) => `<strong>${p1}</strong>`);
-  result = result.replace(/~(.*?)~/g, (_match, p1) => `<del>${p1}</del>`);
-  result = result.replace(/^### (.*)$/gm, (_match, p1) => `\t\`<strong>${p1}</strong>\``);
+  result = result.replace(/```[a-zA-Z]+\n/g, '```'); // Basic code block cleanup
+  result = result.replace(/\*\*(.*?)\*\*/g, (_match, p1) => `<strong>${p1}</strong>`); // Bold with **
+  result = result.replace(/\*(.*?)\*/g, (_match, p1) => `<em>${p1}</em>`); // Italics with * (changed from strong to em for differentiation)
+  result = result.replace(/~(.*?)~/g, (_match, p1) => `<del>${p1}</del>`); // Strikethrough
+  result = result.replace(/^### (.*)$/gm, (_match, p1) => `<h3>${p1}</h3>`); // H3
+  result = result.replace(/^## (.*)$/gm, (_match, p1) => `<h2>${p1}</h2>`); // H2
+  result = result.replace(/^# (.*)$/gm, (_match, p1) => `<h1>${p1}</h1>`); // H1
+  
+  // Handle simple markdown lists (unordered)
+  result = result.replace(/^\s*[-*+]\s+(.*)/gm, (_match, p1) => `<li>${p1}</li>`);
+  // Wrap sets of <li> in <ul>, this is a bit naive and might need refinement for complex cases
+  if (result.includes("<li>")) {
+      result = `<ul>${result.replace(/<\/li>\s*<li>/g, '</li><li>')}</ul>`;
+      // Clean up potential empty <ul> or <ul><li></li></ul> which might result from regex
+      result = result.replace(/<ul>\s*<\/ul>/g, '');
+  }
+  
+  // Handle simple markdown lists (ordered)
+  result = result.replace(/^\s*\d+\.\s+(.*)/gm, (_match, p1) => `<li class="ml-4">${p1}</li>`);
+   if (result.includes('<li class="ml-4">')) {
+       result = `<ol>${result.replace(/<\/li>\s*<li class="ml-4">/g, '</li><li class="ml-4">')}</ol>`;
+       result = result.replace(/<ol>\s*<\/ol>/g, '');
+   }
+
+  result = result.replace(/\n/g, '<br />'); // Replace newlines with <br /> for HTML display
 
   return result;
 }
 
-const MAX_TRANSCRIPT_RETRIES = 5;
-const RETRY_DELAY_MS = 2000; // 2 seconds
+const MAX_TRANSCRIPT_RETRIES = 3; // Reduced for faster feedback during debugging
+const RETRY_DELAY_MS = 1500; 
 
 async function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -58,6 +78,21 @@ export default function TubeDigestPage() {
       });
       return;
     }
+
+    // Client-side validation for selectedModel BEFORE any API call
+    if (!selectedModel || typeof selectedModel !== 'string' || selectedModel.trim().length === 0) {
+      const clientErrorMsg = `Client-side: Invalid AI model selected. Value: '${selectedModel}', Type: ${typeof selectedModel}. Please select a model.`;
+      console.error(clientErrorMsg);
+      setError("An AI model must be selected. Please check the dropdown.");
+      toast({
+        title: "Model Selection Error",
+        description: "An AI model must be selected. Please check the dropdown.",
+        variant: "destructive",
+      });
+      return; 
+    }
+    console.log(`[TubeDigestPage] Using model for API calls: '${selectedModel}'`);
+
 
     setIsLoadingTranscript(true);
     let transcriptFetched = false;
@@ -108,7 +143,7 @@ export default function TubeDigestPage() {
         if (attempt < MAX_TRANSCRIPT_RETRIES) {
           toast({
             title: "Transcript Fetch Failed",
-            description: `Attempt ${attempt} failed: ${e.message}. Retrying in ${RETRY_DELAY_MS / 1000} seconds...`,
+            description: `Attempt ${attempt} failed: ${e.message}. Retrying...`,
             variant: "destructive",
           });
           await sleep(RETRY_DELAY_MS);
@@ -135,21 +170,6 @@ export default function TubeDigestPage() {
     setTranscript(fetchedTranscriptContent);
     
     setIsLoadingSummary(true);
-
-    // Client-side validation for selectedModel
-    if (!selectedModel || typeof selectedModel !== 'string' || selectedModel.trim().length === 0) {
-      const clientErrorMsg = `Client-side: Invalid AI model selected. Value: '${selectedModel}', Type: ${typeof selectedModel}. Please select a model or refresh.`;
-      console.error(clientErrorMsg);
-      setError("An AI model must be selected. Please check the dropdown or refresh the page.");
-      toast({
-        title: "Model Selection Error",
-        description: "An AI model must be selected. Please check the dropdown.",
-        variant: "destructive",
-      });
-      setIsLoadingSummary(false); // Reset loading state
-      return; // Stop execution
-    }
-
     console.log(`[TubeDigestPage] Attempting to call /api/summarize with model: '${selectedModel}' and transcript length: ${fetchedTranscriptContent.length}`);
 
     try {
@@ -195,7 +215,7 @@ export default function TubeDigestPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-2 px-6 pt-0 pb-2">
-          <div className="space-y-3 pt-6" id="url-input-section"> {/* Added pt-6 here to maintain original top padding of CardContent */}
+          <div className="space-y-3 pt-6" id="url-input-section">
             <Input
               id="youtube-url-input"
               type="url"
@@ -224,7 +244,7 @@ export default function TubeDigestPage() {
           </div>
 
           {error && (
-            <Alert variant="destructive" className="shadow-md" id="error-alert-section">
+            <Alert variant="destructive" className="shadow-md mt-4" id="error-alert-section">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
               <AlertDescription>{error}</AlertDescription>
@@ -241,54 +261,88 @@ export default function TubeDigestPage() {
               </ScrollArea>
             </div>
           )}
-
+          
           {summary && typeof summary === 'object' && summary.topikUtama && !error && (
-            <div id="summary-section" className="space-y-3 pt-4">
-              <CardTitle className="flex items-center text-2xl font-headline">
+            <div id="summary-section" className="space-y-6 pt-6">
+              <CardTitle className="flex items-center text-2xl font-headline mb-4">
                 <SparklesIcon className="mr-3 h-6 w-6 text-primary" /> Detail Ringkasan
               </CardTitle>
-              <div className="space-y-4">
-                <div id="summary-section-topik-utama">
-                  <h3 className="font-semibold text-lg mb-2 text-foreground/90">1. Topik Utama</h3>
-                  <ScrollArea className="h-auto w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-topik-utama">
-                    <p className="whitespace-pre-wrap leading-relaxed" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.topikUtama) }} />
+              
+              <div id="summary-section-topik-utama" className="space-y-2">
+                <h3 className="font-semibold text-lg flex items-center text-foreground/90">
+                  <SparklesIcon className="mr-2 h-5 w-5 text-primary/80" />Topik Utama
+                </h3>
+                <ScrollArea className="h-auto max-h-60 w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-topik-utama">
+                  <p className="whitespace-pre-wrap leading-relaxed" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.topikUtama) }} />
+                </ScrollArea>
+              </div>
+
+              {summary.kronologiAlur && summary.kronologiAlur.length > 0 && (
+                <div id="summary-section-kronologi-alur" className="space-y-2">
+                  <h3 className="font-semibold text-lg flex items-center text-foreground/90">
+                    <ListChecksIcon className="mr-2 h-5 w-5 text-primary/80" />Kronologi/Alur
+                  </h3>
+                  <ScrollArea className="h-auto max-h-72 w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-kronologi-alur">
+                    <ul className="list-disc space-y-1.5 pl-5">
+                      {summary.kronologiAlur.map((item, index) => (
+                        <li key={`kronologi-${index}`} dangerouslySetInnerHTML={{ __html: formatSummaryText(item) }} />
+                      ))}
+                    </ul>
                   </ScrollArea>
                 </div>
-                <div id="summary-section-kronologi-alur">
-                  <h3 className="font-semibold text-lg mb-2 text-foreground/90">2. Kronologi/Alur</h3>
-                  <ScrollArea className="h-auto w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-kronologi-alur">
-                    <p className="whitespace-pre-wrap leading-relaxed" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.kronologiAlur) }} />
+              )}
+
+              {summary.poinPoinKunci && summary.poinPoinKunci.length > 0 && (
+                <div id="summary-section-poin-kunci" className="space-y-2">
+                  <h3 className="font-semibold text-lg flex items-center text-foreground/90">
+                    <KeyIcon className="mr-2 h-5 w-5 text-primary/80" />Poin-poin Kunci
+                  </h3>
+                  <ScrollArea className="h-auto max-h-96 w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-poin-kunci">
+                    <div className="space-y-3">
+                      {summary.poinPoinKunci.map((item, index) => (
+                        <div key={`poin-${index}`} className="rounded-md border border-border/50 p-2.5 bg-background/30">
+                          {item.judul && <h4 className="font-medium text-foreground/95 mb-1" dangerouslySetInnerHTML={{ __html: formatSummaryText(item.judul) }} />}
+                          {item.penjelasan && <p className="whitespace-pre-wrap leading-relaxed text-foreground/80" dangerouslySetInnerHTML={{ __html: formatSummaryText(item.penjelasan) }} />}
+                        </div>
+                      ))}
+                    </div>
                   </ScrollArea>
                 </div>
-                <div id="summary-section-poin-kunci">
-                  <h3 className="font-semibold text-lg mb-2 text-foreground/90">3. Poin-poin Kunci</h3>
-                  <ScrollArea className="h-auto w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-poin-kunci">
-                     <p className="whitespace-pre-wrap leading-relaxed" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.poinPoinKunci) }} />
+              )}
+
+              {summary.pembelajaranInsight && summary.pembelajaranInsight.length > 0 && (
+                <div id="summary-section-pembelajaran-insight" className="space-y-2">
+                  <h3 className="font-semibold text-lg flex items-center text-foreground/90">
+                    <LightbulbIcon className="mr-2 h-5 w-5 text-primary/80" />Pembelajaran/Insight
+                  </h3>
+                  <ScrollArea className="h-auto max-h-96 w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-pembelajaran-insight">
+                     <div className="space-y-3">
+                      {summary.pembelajaranInsight.map((item, index) => (
+                        <div key={`insight-${index}`} className="rounded-md border border-border/50 p-2.5 bg-background/30">
+                          {item.judul && <h4 className="font-medium text-foreground/95 mb-1" dangerouslySetInnerHTML={{ __html: formatSummaryText(item.judul) }} />}
+                          {item.penjelasan && <p className="whitespace-pre-wrap leading-relaxed text-foreground/80" dangerouslySetInnerHTML={{ __html: formatSummaryText(item.penjelasan) }} />}
+                        </div>
+                      ))}
+                    </div>
                   </ScrollArea>
                 </div>
-                <div id="summary-section-pembelajaran-insight">
-                  <h3 className="font-semibold text-lg mb-2 text-foreground/90">4. Pembelajaran/Insight</h3>
-                  <ScrollArea className="h-auto w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-pembelajaran-insight">
-                    <p className="whitespace-pre-wrap leading-relaxed" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.pembelajaranInsight) }} />
-                  </ScrollArea>
-                </div>
-                <div id="summary-section-kesimpulan">
-                  <h3 className="font-semibold text-lg mb-2 text-foreground/90">5. Kesimpulan</h3>
-                  <ScrollArea className="h-auto w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-kesimpulan">
-                    <p className="whitespace-pre-wrap leading-relaxed" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.kesimpulan) }} />
-                  </ScrollArea>
-                </div>
+              )}
+              
+              <div id="summary-section-kesimpulan" className="space-y-2">
+                <h3 className="font-semibold text-lg flex items-center text-foreground/90">
+                  <CheckSquareIcon className="mr-2 h-5 w-5 text-primary/80" />Kesimpulan
+                </h3>
+                <ScrollArea className="h-auto max-h-60 w-full rounded-md border bg-muted/30 p-3 text-sm" id="summary-scroll-area-kesimpulan">
+                  <p className="whitespace-pre-wrap leading-relaxed" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.kesimpulan) }} />
+                </ScrollArea>
               </div>
             </div>
           )}
         </CardContent>
-         <CardFooter className="text-center text-xs text-muted-foreground pt-4">
+         <CardFooter className="text-center text-xs text-muted-foreground pt-4 pb-6">
           <p>Powered by AI. Summaries are for informational purposes and may not always be perfect.</p>
         </CardFooter>
       </Card>
     </div>
   );
 }
-    
-
-    

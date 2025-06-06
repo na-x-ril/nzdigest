@@ -100,16 +100,42 @@ Pastikan output Anda HANYA berupa objek JSON yang valid, sesuai dengan skema yan
 Skema JSON yang diharapkan:
 {
   "topikUtama": "Penjelasan detail konteks dan latar belakang topik utama.",
-  "kronologiAlur": "Poin-poin penting yang terjadi secara berurutan, diformat sebagai daftar bernomor atau berpoin.",
-  "poinPoinKunci": "Beberapa poin kunci dengan penjelasan detail untuk setiap poin, diformat sebagai daftar.",
-  "pembelajaranInsight": "Minimal 3 pembelajaran atau wawasan penting, masing-masing dengan penjelasan, diformat sebagai daftar.",
-  "kesimpulan": "Ringkasan mendalam tentang keseluruhan konten."
+  "kronologiAlur": [
+    "Poin penting pertama secara berurutan dari transkrip.",
+    "Poin penting kedua secara berurutan dari transkrip.",
+    "Dan seterusnya..."
+  ],
+  "poinPoinKunci": [
+    {
+      "judul": "Judul Poin Kunci 1 (dari transkrip)",
+      "penjelasan": "Penjelasan detail untuk poin kunci 1, berdasarkan transkrip."
+    },
+    {
+      "judul": "Judul Poin Kunci 2 (dari transkrip)",
+      "penjelasan": "Penjelasan detail untuk poin kunci 2, berdasarkan transkrip."
+    }
+  ],
+  "pembelajaranInsight": [
+    {
+      "judul": "Judul Pembelajaran/Insight Penting 1 (dari transkrip)",
+      "penjelasan": "Penjelasan untuk pembelajaran atau insight penting 1, berdasarkan transkrip."
+    },
+    {
+      "judul": "Judul Pembelajaran/Insight Penting 2 (dari transkrip)",
+      "penjelasan": "Penjelasan untuk pembelajaran atau insight penting 2, berdasarkan transkrip."
+    },
+    {
+      "judul": "Judul Pembelajaran/Insight Penting 3 (dari transkrip)",
+      "penjelasan": "Penjelasan untuk pembelajaran atau insight penting 3, berdasarkan transkrip."
+    }
+  ],
+  "kesimpulan": "Ringkasan mendalam tentang keseluruhan konten video berdasarkan transkrip."
 }
 
 Transkrip Video:
 ${input.transcript}
 
-Mohon berikan ringkasan dalam format JSON di atas. Jangan awali respons Anda dengan frasa seperti "Berikut adalah ringkasan...". Langsung ke objek JSON. Berikan contoh spesifik dari transkrip jika relevan untuk memperjelas poin.`;
+Mohon berikan ringkasan dalam format JSON di atas. Jangan awali respons Anda dengan frasa seperti "Berikut adalah ringkasan...". Langsung ke objek JSON. Pastikan semua string dalam JSON di-escape dengan benar. Berikan contoh spesifik dari transkrip jika relevan untuk memperjelas poin. Output harus berupa objek JSON tunggal yang valid.`;
 
     try {
       console.log(`[Groq Flow] Making Groq API call with model: ${input.modelName}`);
@@ -125,8 +151,8 @@ Mohon berikan ringkasan dalam format JSON di atas. Jangan awali respons Anda den
           },
         ],
         model: input.modelName,
-        temperature: 0.7,
-        max_tokens: 4000,
+        temperature: 0.3, // Lowered temperature for more structured output
+        max_tokens: 4000, // Adjusted based on typical needs for detailed summaries
         top_p: 0.8,
         response_format: { type: "json_object" }, // Ensure JSON mode
         stream: false,
@@ -146,7 +172,7 @@ Mohon berikan ringkasan dalam format JSON di atas. Jangan awali respons Anda den
       const validationResult = SummarizeTranscriptOutputSchema.safeParse(parsedOutput);
       if (!validationResult.success) {
         console.error("[Groq Flow] Output failed Zod validation:", validationResult.error.errors);
-        console.error("[Groq Flow] Data that failed validation:", parsedOutput);
+        console.error("[Groq Flow] Data that failed validation:", JSON.stringify(parsedOutput, null, 2));
         throw new Error(`Groq AI output did not match expected schema: ${validationResult.error.message}`);
       }
 
@@ -158,7 +184,11 @@ Mohon berikan ringkasan dalam format JSON di atas. Jangan awali respons Anda den
       if (error.response) {
         console.error('[Groq Flow] Groq API Error Response:', error.response.data);
       }
-      throw new Error(`Failed to get summary from Groq: ${error.message}`);
+      let errorMessage = `Failed to get summary from Groq: ${error.message}`;
+      if (error.code === 'json_validate_failed' && error.failed_generation) {
+        errorMessage += ` Groq failed to generate valid JSON. Attempted generation: ${String(error.failed_generation).substring(0, 300)}...`;
+      }
+      throw new Error(errorMessage);
     }
   }
 );

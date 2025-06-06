@@ -14,11 +14,16 @@
  */
 import { z } from 'zod';
 
+const PoinKunciSchema = z.object({
+  judul: z.string().describe("Judul atau nama singkat dari poin kunci/pembelajaran."),
+  penjelasan: z.string().describe("Penjelasan detail untuk poin kunci atau pembelajaran/insight."),
+});
+
 export const SummarizeTranscriptOutputSchema = z.object({
   topikUtama: z.string().describe("Penjelasan detail konteks dan latar belakang topik utama."),
-  kronologiAlur: z.string().describe("Poin-poin penting yang terjadi secara berurutan, diformat sebagai daftar bernomor atau berpoin."),
-  poinPoinKunci: z.string().describe("Beberapa poin kunci dengan penjelasan detail untuk setiap poin, diformat sebagai daftar."),
-  pembelajaranInsight: z.string().describe("Minimal 3 pembelajaran atau wawasan penting, masing-masing dengan penjelasan, diformat sebagai daftar."),
+  kronologiAlur: z.array(z.string()).describe("Array string berisi poin-poin penting yang terjadi secara berurutan."),
+  poinPoinKunci: z.array(PoinKunciSchema).describe("Array objek berisi beberapa poin kunci, masing-masing dengan judul dan penjelasan detail."),
+  pembelajaranInsight: z.array(PoinKunciSchema).describe("Array objek berisi minimal 3 pembelajaran atau wawasan penting, masing-masing dengan judul dan penjelasan."),
   kesimpulan: z.string().describe("Ringkasan mendalam tentang keseluruhan konten."),
 });
 export type SummarizeTranscriptOutput = z.infer<typeof SummarizeTranscriptOutputSchema>;
