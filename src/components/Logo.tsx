@@ -5,11 +5,11 @@ export function Logo(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 205 56" // Adjusted viewBox for "NZDigest"
+      viewBox="0 0 70 56" // Adjusted for tightly kerned "NZD"
       {...props}
     >
       <text
-        x="0"
+        x="0" // N
         y="43"
         fontFamily="Inter, sans-serif, Arial"
         fontSize="50"
@@ -19,7 +19,7 @@ export function Logo(props: SVGProps<SVGSVGElement>) {
         N
       </text>
       <text
-        x="25" // Adjusted x for "Z" for a connected look
+        x="23" // Z, adjusted for a connected look with N
         y="43"
         fontFamily="Inter, sans-serif, Arial"
         fontSize="50"
@@ -29,7 +29,7 @@ export function Logo(props: SVGProps<SVGSVGElement>) {
         Z
       </text>
       <text
-        x="50" // Adjusted x for "D" for a connected look
+        x="46" // D, adjusted for a connected look with Z
         y="43"
         fontFamily="Inter, sans-serif, Arial"
         fontSize="50"
@@ -37,56 +37,6 @@ export function Logo(props: SVGProps<SVGSVGElement>) {
         fill="currentColor"
       >
         D
-      </text>
-      <text
-        x="75" // Adjusted x for "i"
-        y="43"
-        fontFamily="Inter, sans-serif, Arial"
-        fontSize="50"
-        fontWeight="bold"
-        fill="currentColor"
-      >
-        i
-      </text>
-      <text
-        x="88" // Adjusted x for "g"
-        y="43"
-        fontFamily="Inter, sans-serif, Arial"
-        fontSize="50"
-        fontWeight="bold"
-        fill="currentColor"
-      >
-        g
-      </text>
-      <text
-        x="113" // Adjusted x for "e"
-        y="43"
-        fontFamily="Inter, sans-serif, Arial"
-        fontSize="50"
-        fontWeight="bold"
-        fill="currentColor"
-      >
-        e
-      </text>
-      <text
-        x="136" // Adjusted x for "s"
-        y="43"
-        fontFamily="Inter, sans-serif, Arial"
-        fontSize="50"
-        fontWeight="bold"
-        fill="currentColor"
-      >
-        s
-      </text>
-      <text
-        x="159" // Adjusted x for "t"
-        y="43"
-        fontFamily="Inter, sans-serif, Arial"
-        fontSize="50"
-        fontWeight="bold"
-        fill="currentColor"
-      >
-        t
       </text>
     </svg>
   );
