@@ -11,31 +11,25 @@ export function Logo(props: SVGProps<SVGSVGElement>) {
       {...props} // Spread props first so className can override default width/height if they were set
     >
       <text
-        x="2" // T remains in its original x position
-        y="43" // Adjusted y for better vertical centering with Inter font
+        x="-2" // T remains in its original x position
+        y="46" // Adjusted y for better vertical centering with Inter font
         fontFamily="Inter, sans-serif, Arial" // Added Arial as a common fallback
-        fontSize="42" // Slightly adjusted font size for balance
+        fontSize="50" // Slightly adjusted font size for balance
         fontWeight="bold"
         fill="currentColor" // Inherits color from parent (e.g., text-primary)
       >
         T
       </text>
       <text
-        x="20" // Moved D closer to T (was 26) for top bar merge effect
-        y="43" // Adjusted y for better vertical centering
+        x="23.5" // Moved D closer to T (was 26) for top bar merge effect
+        y="46" // Adjusted y for better vertical centering
         fontFamily="Inter, sans-serif, Arial"
-        fontSize="42"
+        fontSize="50"
         fontWeight="bold"
         fill="currentColor" // Inherits color from parent
       >
         D
       </text>
-      {/* Play button triangle 'twist' inside D's visual area */}
-      {/* Coordinates are fine-tuned to sit visually centered within the D, adjusted for D's new position */}
-      <path
-        d="M31 28 L38 24 V32 L31 28 Z" // X-coordinates shifted left by 6 (original M37 28 L44 24 V32 L37 28 Z)
-        fill="hsl(var(--accent))"   // Accent color for the play button
-      />
     </svg>
   );
 }

@@ -222,8 +222,8 @@ export default function TubeDigestPage() {
     <div className="flex flex-col items-center justify-start bg-background p-4 sm:pt-12">
       <Card className="w-full max-w-2xl shadow-2xl rounded-lg" id="main-content-card">
         <CardHeader className="text-center">
-          <div className="flex justify-center items-center mb-4">
-            <Logo className="h-24 w-24 text-primary" /> {/* Increased size */}
+          <div className="flex justify-center items-center">
+            <Logo className="h-21 w-24 text-primary" />
           </div>
           <CardTitle className="text-4xl font-headline tracking-tight">TubeDigest</CardTitle>
           <CardDescription className="text-lg">
