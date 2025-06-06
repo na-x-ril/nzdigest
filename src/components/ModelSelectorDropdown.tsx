@@ -13,7 +13,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { ChevronDownIcon, ZapIcon, BrainCircuitIcon } from "lucide-react";
-import { useModel, type Model } from "@/contexts/ModelContext"; // Ensure type Model is imported
+import { useModel, type Model } from "@/contexts/ModelContext"; 
+import { cn } from "@/lib/utils";
 
 export function ModelSelectorDropdown() {
   const { selectedModel, setSelectedModel } = useModel();
@@ -40,41 +41,52 @@ export function ModelSelectorDropdown() {
     [qwenQwq]: BrainCircuitIcon,
   };
 
-  const CurrentModelIcon = modelIcons[selectedModel] || ZapIcon; // Fallback icon
+  const CurrentModelIcon = modelIcons[selectedModel] || ZapIcon; 
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="flex items-center gap-2 pl-3 pr-2 h-10">
+        <Button 
+          variant="outline" 
+          className={cn(
+            "flex items-center gap-2 pl-3 pr-2 h-10",
+            "bg-background/80 backdrop-blur-sm supports-[backdrop-filter]:bg-background/60 hover:bg-accent/70"
+          )}
+        >
           <CurrentModelIcon className="h-4 w-4" />
           <span className="text-sm font-medium">{modelDisplayNames[selectedModel] || selectedModel}</span>
           <ChevronDownIcon className="h-4 w-4 opacity-70" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-80"> {/* Increased width for longer names */}
+      <DropdownMenuContent 
+        className={cn(
+          "w-80", 
+          "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70 text-foreground border-border/80"
+        )}
+      >
         <DropdownMenuLabel>Pilih Model AI</DropdownMenuLabel>
-        <DropdownMenuSeparator />
+        <DropdownMenuSeparator className="bg-border/50" />
         <DropdownMenuRadioGroup
           value={selectedModel}
           onValueChange={(value) => setSelectedModel(value as Model)}
         >
-          <DropdownMenuRadioItem value={geminiFlash} className="flex items-center gap-2.5 cursor-pointer py-2">
+          <DropdownMenuRadioItem value={geminiFlash} className="flex items-center gap-2.5 cursor-pointer py-2 focus:bg-accent/70">
             <ZapIcon className="h-4 w-4 text-primary" />
             <span>{modelDisplayNames[geminiFlash]}</span>
           </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value={llama3Groq70b} className="flex items-center gap-2.5 cursor-pointer py-2">
+          <DropdownMenuRadioItem value={llama3Groq70b} className="flex items-center gap-2.5 cursor-pointer py-2 focus:bg-accent/70">
             <BrainCircuitIcon className="h-4 w-4 text-primary" />
             <span>{modelDisplayNames[llama3Groq70b]}</span>
           </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value={llama4Scout} className="flex items-center gap-2.5 cursor-pointer py-2">
+          <DropdownMenuRadioItem value={llama4Scout} className="flex items-center gap-2.5 cursor-pointer py-2 focus:bg-accent/70">
             <BrainCircuitIcon className="h-4 w-4 text-primary" />
             <span>{modelDisplayNames[llama4Scout]}</span>
           </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value={deepseekR1} className="flex items-center gap-2.5 cursor-pointer py-2">
+          <DropdownMenuRadioItem value={deepseekR1} className="flex items-center gap-2.5 cursor-pointer py-2 focus:bg-accent/70">
             <BrainCircuitIcon className="h-4 w-4 text-primary" />
             <span>{modelDisplayNames[deepseekR1]}</span>
           </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value={qwenQwq} className="flex items-center gap-2.5 cursor-pointer py-2">
+          <DropdownMenuRadioItem value={qwenQwq} className="flex items-center gap-2.5 cursor-pointer py-2 focus:bg-accent/70">
             <BrainCircuitIcon className="h-4 w-4 text-primary" />
             <span>{modelDisplayNames[qwenQwq]}</span>
           </DropdownMenuRadioItem>
