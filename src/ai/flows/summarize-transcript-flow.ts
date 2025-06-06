@@ -1,63 +1,160 @@
+
 'use server';
-
 /**
- * @fileOverview Summarizes a YouTube transcript using an LLM with a detailed, structured format.
- *
- * - summarizeTranscript - A function that summarizes a given transcript.
- * - SummarizeTranscriptInput - The input type for the summarizeTranscript function.
- * - SummarizeTranscriptOutput - The return type for the summarizeTranscript function, including detailed sections.
+ * @fileOverview Summarizes a YouTube transcript using Groq's LLaMA models.
+ * - summarizeTranscript - A function that summarizes a given transcript using a specified LLaMA model on Groq.
  */
-
+import Groq from 'groq-sdk';
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import {
+  SummarizeTranscriptGroqInputSchema,
+  type SummarizeTranscriptGroqInput,
+  SummarizeTranscriptOutputSchema,
+  type SummarizeTranscriptOutput,
+} from '@/ai/schemas/transcript-summary-schemas';
+import { z } from 'zod';
 
-const SummarizeTranscriptInputSchema = z.object({
-  transcript: z.string().describe('The transcript of the YouTube video.'),
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY,
 });
 
-export type SummarizeTranscriptInput = z.infer<typeof SummarizeTranscriptInputSchema>;
+// Helper to clean and parse JSON, potentially wrapped in markdown
+function cleanAndParseJson(jsonString: string): any {
+  console.log("Attempting to clean and parse JSON. Raw string:", jsonString);
 
-const SummarizeTranscriptOutputSchema = z.object({
-  topikUtama: z.string().describe('Penjelasan detail konteks dan latar belakang topik utama.'),
-  kronologiAlur: z.string().describe('Poin-poin penting yang terjadi secara berurutan, diformat sebagai daftar bernomor atau berpoin.'),
-  poinPoinKunci: z.string().describe('Beberapa poin kunci dengan penjelasan detail untuk setiap poin, diformat sebagai daftar.'),
-  pembelajaranInsight: z.string().describe('Minimal 3 pembelajaran atau wawasan penting, masing-masing dengan penjelasan, diformat sebagai daftar.'),
-  kesimpulan: z.string().describe('Ringkasan mendalam tentang keseluruhan konten.'),
-});
+  let cleanedString = jsonString.trim();
 
-export type SummarizeTranscriptOutput = z.infer<typeof SummarizeTranscriptOutputSchema>;
+  // Remove potential markdown code block fences (```json ... ``` or ``` ... ```)
+  if (cleanedString.startsWith("```json")) {
+    cleanedString = cleanedString.substring(7, cleanedString.length - 3).trim();
+  } else if (cleanedString.startsWith("```")) {
+    cleanedString = cleanedString.substring(3, cleanedString.length - 3).trim();
+  }
 
-export async function summarizeTranscript(input: SummarizeTranscriptInput): Promise<SummarizeTranscriptOutput> {
-  return summarizeTranscriptFlow(input);
+  // If not a valid JSON object, try to extract content between first { and last }
+  if (!cleanedString.startsWith("{") || !cleanedString.endsWith("}")) {
+    console.warn("Cleaned string does not appear to be a simple JSON object. Attempting to extract from first '{' to last '}'. Original cleaned string:", cleanedString);
+    const firstBrace = cleanedString.indexOf("{");
+    const lastBrace = cleanedString.lastIndexOf("}");
+    if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+      cleanedString = cleanedString.substring(firstBrace, lastBrace + 1);
+      console.log("Substring extraction result:", cleanedString);
+    } else {
+      console.error("Could not find valid JSON structure for substring extraction.");
+      // Fallback or throw error if even substring extraction fails
+    }
+  }
+
+  console.log("String after cleaning, before parsing:", cleanedString);
+  try {
+    const parsed = JSON.parse(cleanedString);
+    console.log("Successfully parsed JSON:", parsed);
+    return parsed;
+  } catch (e: any) {
+    console.error("Failed to parse JSON even after cleaning. Error:", e.message, "String was:", cleanedString);
+    throw new Error(`Failed to parse JSON response from AI: ${e.message}. Attempted to parse: ${cleanedString.substring(0, 200)}...`);
+  }
 }
 
-const prompt = ai.definePrompt({
-  name: 'summarizeTranscriptPrompt',
-  input: {schema: SummarizeTranscriptInputSchema},
-  output: {schema: SummarizeTranscriptOutputSchema},
-  prompt: `Anda adalah seorang ahli analisis konten yang bertugas meringkas transkrip video YouTube.
-Tugas Anda adalah menghasilkan ringkasan yang terstruktur dan sangat detail berdasarkan transkrip yang diberikan.
 
-Transkrip Video:
-{{{transcript}}}
-
-Mohon berikan ringkasan dalam format berikut, dengan penjelasan yang sangat detail untuk setiap bagian. Jangan awali respons Anda dengan frasa seperti "Berikut adalah ringkasan...". Langsung ke poin pertama. Berikan contoh spesifik dari transkrip jika relevan untuk memperjelas poin.
-
-1.  **Topik Utama**: Jelaskan secara detail konteks dan latar belakang dari topik utama yang dibahas dalam video.
-2.  **Kronologi/Alur**: Paparkan poin-poin penting yang terjadi atau dibahas secara berurutan dalam video. Jika video menjelaskan suatu proses atau cerita, urutkan kejadiannya.
-3.  **Poin-poin Kunci**: Identifikasi beberapa poin paling penting dari video. Untuk setiap poin kunci, berikan penjelasan yang detail dan mendalam.
-4.  **Pembelajaran/Insight**: Ekstrak minimal 3 pembelajaran atau wawasan penting yang dapat diambil dari konten video. Berikan penjelasan untuk setiap pembelajaran/insight.
-5.  **Kesimpulan**: Buatlah ringkasan akhir yang mendalam dan mencakup keseluruhan esensi dari konten video.`,
-});
+export async function summarizeTranscript(input: SummarizeTranscriptGroqInput): Promise<SummarizeTranscriptOutput> {
+  console.log("Groq summarizeTranscript called with input:", input);
+  if (!input.modelName) {
+    throw new Error("Groq model name is required.");
+  }
+  try {
+    const result = await summarizeTranscriptFlow(input);
+    if (!result || typeof result !== 'object' || !result.topikUtama) {
+        console.error("Groq flow returned invalid or empty result:", result);
+        throw new Error('Failed to generate summary content from Groq AI or unexpected format.');
+    }
+    return result;
+  } catch (error: any) {
+    console.error("Error in Groq summarizeTranscript:", error);
+    throw new Error(`Groq summarization failed: ${error.message}`);
+  }
+}
 
 const summarizeTranscriptFlow = ai.defineFlow(
   {
-    name: 'summarizeTranscriptFlow',
-    inputSchema: SummarizeTranscriptInputSchema,
+    name: 'summarizeTranscriptGroqFlow',
+    inputSchema: SummarizeTranscriptGroqInputSchema,
     outputSchema: SummarizeTranscriptOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
+  async (input) => {
+    console.log("Groq summarizeTranscriptFlow started with input:", input);
+    if (!process.env.GROQ_API_KEY) {
+      console.error("GROQ_API_KEY is not set.");
+      throw new Error("GROQ_API_KEY environment variable is not set.");
+    }
+
+    const systemMessage = `Anda adalah seorang ahli analisis konten yang bertugas meringkas transkrip video YouTube.
+Tugas Anda adalah menghasilkan ringkasan yang terstruktur dan sangat detail berdasarkan transkrip yang diberikan.
+Pastikan output Anda HANYA berupa objek JSON yang valid, sesuai dengan skema yang akan dijelaskan. Jangan sertakan teks atau markdown lain di luar objek JSON.
+
+Skema JSON yang diharapkan:
+{
+  "topikUtama": "Penjelasan detail konteks dan latar belakang topik utama.",
+  "kronologiAlur": "Poin-poin penting yang terjadi secara berurutan, diformat sebagai daftar bernomor atau berpoin.",
+  "poinPoinKunci": "Beberapa poin kunci dengan penjelasan detail untuk setiap poin, diformat sebagai daftar.",
+  "pembelajaranInsight": "Minimal 3 pembelajaran atau wawasan penting, masing-masing dengan penjelasan, diformat sebagai daftar.",
+  "kesimpulan": "Ringkasan mendalam tentang keseluruhan konten."
+}
+
+Transkrip Video:
+${input.transcript}
+
+Mohon berikan ringkasan dalam format JSON di atas. Jangan awali respons Anda dengan frasa seperti "Berikut adalah ringkasan...". Langsung ke objek JSON. Berikan contoh spesifik dari transkrip jika relevan untuk memperjelas poin.`;
+
+    try {
+      console.log(`Making Groq API call with model: ${input.modelName}`);
+      const chatCompletion = await groq.chat.completions.create({
+        messages: [
+          {
+            role: 'system',
+            content: systemMessage,
+          },
+          {
+            role: 'user',
+            content: `Tolong ringkas transkrip berikut sesuai dengan instruksi dan format JSON yang telah diberikan:\n\n${input.transcript}`,
+          },
+        ],
+        model: input.modelName, // e.g., "llama3-70b-8192"
+        temperature: 0.3,
+        max_tokens: 4000,
+        top_p: 0.8,
+        response_format: { type: "json_object" }, // Enforce JSON mode
+        stream: false,
+      });
+
+      console.log("Raw response from Groq API:", JSON.stringify(chatCompletion, null, 2));
+
+      const rawContent = chatCompletion.choices[0]?.message?.content;
+      if (!rawContent) {
+        console.error("No content in Groq API response choice.");
+        throw new Error('No content returned from Groq AI.');
+      }
+
+      console.log("Raw content string from Groq choice:", rawContent);
+      const parsedOutput = cleanAndParseJson(rawContent);
+
+      // Validate with Zod schema
+      const validationResult = SummarizeTranscriptOutputSchema.safeParse(parsedOutput);
+      if (!validationResult.success) {
+        console.error("Groq output failed Zod validation:", validationResult.error.errors);
+        console.error("Data that failed validation:", parsedOutput);
+        throw new Error(`Groq AI output did not match expected schema: ${validationResult.error.message}`);
+      }
+
+      console.log("Groq flow successfully processed and validated output.");
+      return validationResult.data;
+
+    } catch (error: any) {
+      console.error('Error during Groq API call or processing:', error.message, error.stack);
+      if (error.response) {
+        console.error('Groq API Error Response:', error.response.data);
+      }
+      throw new Error(`Failed to get summary from Groq: ${error.message}`);
+    }
   }
 );
