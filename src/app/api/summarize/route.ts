@@ -9,23 +9,16 @@ import {
   summarizeTranscriptGemini,
   type SummarizeTranscriptGeminiInput,
 } from '@/ai/flows/summarize-transcript-gemini-flow';
-import type { Model } from '@/contexts/ModelContext'; // Assuming Model is correctly defined here
+import type { Model } from '@/contexts/ModelContext';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     const transcript = body.transcript;
-    // Ensure body.model is treated as a string from the start for logging
-    const modelFromBody = typeof body.model === 'string' ? body.model : JSON.stringify(body.model);
+    const selectedModelFromRequest = body.model as Model; // Cast here, validation below
 
-    console.log(`[API /api/summarize] Received body.model raw: `, body.model);
-    console.log(`[API /api/summarize] Type of body.model: ${typeof body.model}`);
-    console.log(`[API /api/summarize] modelFromBody (stringified if not string): '${modelFromBody}'`);
-
-    // Explicitly cast after logging, assuming Model type is accurate
-    const selectedModelFromRequest = body.model as Model;
-    console.log(`[API /api/summarize] selectedModelFromRequest after cast: '${selectedModelFromRequest}'`);
-    console.log(`[API /api/summarize] Type of selectedModelFromRequest after cast: ${typeof selectedModelFromRequest}`);
+    console.log(`[API /api/summarize] Received request. Transcript length: ${transcript?.length}, Model: ${selectedModelFromRequest}`);
+    console.log(`[API /api/summarize] Full body received:`, JSON.stringify(body));
 
 
     if (!transcript || typeof transcript !== 'string') {
@@ -37,10 +30,9 @@ export async function POST(request: Request) {
       console.error("[API /api/summarize] Error: Transcript cannot be empty.");
       return NextResponse.json({ error: 'Transcript cannot be empty.' }, { status: 400 });
     }
-
-    // Check if selectedModelFromRequest is a non-empty string
+    
     if (!selectedModelFromRequest || typeof selectedModelFromRequest !== 'string' || selectedModelFromRequest.trim().length === 0) {
-      console.error(`[API /api/summarize] Error: Model selection is required and must be a non-empty string. selectedModelFromRequest: '${selectedModelFromRequest}' (type: ${typeof selectedModelFromRequest})`);
+      console.error(`[API /api/summarize] Error: Model selection is required and must be a non-empty string. Received model: '${selectedModelFromRequest}' (type: ${typeof selectedModelFromRequest})`);
       return NextResponse.json({ error: 'Model selection is required and must be a non-empty string.' }, { status: 400 });
     }
 
@@ -48,20 +40,21 @@ export async function POST(request: Request) {
 
     let result: SummarizeTranscriptOutput | null = null;
 
-    if (selectedModelFromRequest.startsWith("gemini")) {
+    if (selectedModelFromRequest === "gemini-flash") {
       console.log("[API /api/summarize] Using Gemini model for summarization");
       const inputForGemini: SummarizeTranscriptGeminiInput = { transcript };
-      console.log("[API /api/summarize] Input for Gemini:", JSON.stringify(inputForGemini));
+      console.log("[API /api/summarize] Input for Gemini:", JSON.stringify(inputForGemini).substring(0, 200) + "...");
       result = await summarizeTranscriptGemini(inputForGemini);
     } else if (
       selectedModelFromRequest === "llama3-groq" ||
-      selectedModelFromRequest === "llama-3.3-70b-versatile" ||
+      selectedModelFromRequest === "meta-llama/llama-4-scout-17b-16e-instruct" || // Exact Groq model names
       selectedModelFromRequest === "deepseek-r1-distill-llama-70b" ||
       selectedModelFromRequest === "qwen-qwq-32b"
     ) {
       console.log(`[API /api/summarize] Using Groq model: '${selectedModelFromRequest}' for summarization`);
+      // Ensure the modelName being passed to Groq flow matches exactly what Groq expects.
       const inputForGroq: SummarizeTranscriptGroqInput = { transcript, modelName: selectedModelFromRequest };
-      console.log("[API /api/summarize] Input for Groq:", JSON.stringify(inputForGroq));
+      console.log("[API /api/summarize] Input for Groq:", JSON.stringify(inputForGroq).substring(0, 200) + "...");
       result = await summarizeTranscriptGroq(inputForGroq);
     } else {
       console.error(`[API /api/summarize] Error: Unsupported model: '${selectedModelFromRequest}'`);
@@ -73,7 +66,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Failed to generate summary content from AI or unexpected format.' }, { status: 500 });
     }
 
-    console.log("[API /api/summarize] Successfully generated summary. Result:", JSON.stringify(result).substring(0, 200) + "...");
+    console.log("[API /api/summarize] Successfully generated summary. Result snippet:", JSON.stringify(result).substring(0, 200) + "...");
     return NextResponse.json(result);
 
   } catch (error: any) {
@@ -82,7 +75,6 @@ export async function POST(request: Request) {
     if (error.message) {
         message = `Failed to generate summary: ${error.message}`;
     }
-    // Include error details if available, for better debugging from client/logs
     return NextResponse.json({ error: message, details: error.stack || String(error) }, { status: 500 });
   }
 }

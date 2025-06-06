@@ -153,7 +153,7 @@ Mohon berikan ringkasan dalam format JSON di atas. Jangan awali respons Anda den
       console.log("[Groq Flow] Flow successfully processed and validated output.");
       return validationResult.data;
 
-    } catch (error: any)      
+    } catch (error: any) {     
       console.error('[Groq Flow] Error during Groq API call or processing:', error.message, error.stack);
       if (error.response) {
         console.error('[Groq Flow] Groq API Error Response:', error.response.data);

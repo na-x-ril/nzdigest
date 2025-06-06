@@ -51,10 +51,10 @@ Transkrip Video:
 
 Mohon berikan ringkasan dalam format JSON di atas. Jangan awali respons Anda dengan frasa seperti "Berikut adalah ringkasan...". Langsung ke objek JSON. Berikan contoh spesifik dari transkrip jika relevan untuk memperjelas poin.`,
   config: {
-    model: 'googleai/gemini-1.5-flash-latest',
+    model: 'googleai/gemini-1.5-flash-latest', // Ensure fully qualified model name
     temperature: 0.3,
     topP: 0.8,
-    maxOutputTokens: 4000, // Increased for potentially longer structured JSON
+    maxOutputTokens: 4000,
     responseMimeType: 'application/json', // Request JSON output
     safetySettings: [
       { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
@@ -79,8 +79,7 @@ const geminiSummarizeFlow = ai.defineFlow(
         console.error("[Gemini Flow] Gemini prompt returned no output.");
         throw new Error('Gemini prompt returned no output.');
       }
-      console.log("[Gemini Flow] Output from Gemini prompt received."); // Don't log full output here, it might be large
-      // The output should already be a parsed object due to output: { schema: ... } and responseMimeType
+      console.log("[Gemini Flow] Output from Gemini prompt received.");
       return output;
     } catch (error: any) {
       console.error('[Gemini Flow] Error during Gemini prompt execution:', error.message, error.stack);
