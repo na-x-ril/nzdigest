@@ -19,22 +19,22 @@ export function ModelSelectorDropdown() {
   const { selectedModel, setSelectedModel } = useModel();
  
   // Define the model values
-  const llama3Groq70b = 'llama3-70b-8192' as const; // Corrected LLaMA3 identifier
+  const llama3Groq70b = 'llama3-70b-8192' as const; 
   const llama4Scout = 'meta-llama/llama-4-scout-17b-16e-instruct' as const;
   const deepseekR1 = 'deepseek-r1-distill-llama-70b' as const;
   const qwenQwq = 'qwen-qwq-32b' as const;
 
   const modelDisplayNames: Record<Model, string> = {
-    "gemini-flash": "Gemini Flash (Genkit)",
-    [llama3Groq70b]: "LLaMA3 70B (Groq)", // Updated key and display name
-    [llama4Scout]: "LLaMA 4 Scout (Groq)",
-    [deepseekR1]: "Deepseek R1 (Groq)",
-    [qwenQwq]: "Qwen QWQ (Groq)",
+    "gemini-flash": "Gemini Flash",
+    [llama3Groq70b]: "LLaMA3 70B 8192", 
+    [llama4Scout]: "Meta LLaMA 4 Scout 17B",
+    [deepseekR1]: "Deepseek R1 Distill LLaMA 70B",
+    [qwenQwq]: "Qwen QWQ 32B",
   };
 
   const modelIcons: Record<Model, React.ElementType> = {
     "gemini-flash": ZapIcon,
-    [llama3Groq70b]: BrainCircuitIcon, // Updated key
+    [llama3Groq70b]: BrainCircuitIcon, 
     [llama4Scout]: BrainCircuitIcon,
     [deepseekR1]: BrainCircuitIcon,
     [qwenQwq]: BrainCircuitIcon,
@@ -51,7 +51,7 @@ export function ModelSelectorDropdown() {
           <ChevronDownIcon className="h-4 w-4 opacity-70" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-60">
+      <DropdownMenuContent className="w-72"> {/* Increased width for longer names */}
         <DropdownMenuLabel>Pilih Model AI</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuRadioGroup
