@@ -316,12 +316,10 @@ export default function TubeDigestPage() {
                   </h3>
                   <ScrollArea className="w-full rounded-md border bg-muted/30 p-4 text-sm" id="summary-scroll-area-poin-kunci">
                     {summary.poinPoinKunci.map((item, index) => (
-                      <div key={`poin-${index}`} className="rounded-md border border-border/50 p-2.5 bg-background/30 mb-3 last:mb-0">
-                        <p className="whitespace-pre-wrap leading-relaxed text-foreground/80">
-                          {item.judul && <strong className="text-foreground/95" dangerouslySetInnerHTML={{ __html: formatSummaryText(item.judul) + ": " }} />}
-                          {item.penjelasan && <span dangerouslySetInnerHTML={{ __html: formatSummaryText(item.penjelasan) }} />}
-                        </p>
-                      </div>
+                      <p key={`poin-${index}`} className="whitespace-pre-wrap leading-relaxed text-foreground/80 mb-3 last:mb-0">
+                        {item.judul && <strong className="text-foreground/95" dangerouslySetInnerHTML={{ __html: formatSummaryText(item.judul) + ": " }} />}
+                        {item.penjelasan && <span dangerouslySetInnerHTML={{ __html: formatSummaryText(item.penjelasan) }} />}
+                      </p>
                     ))}
                   </ScrollArea>
                 </div>
@@ -334,12 +332,10 @@ export default function TubeDigestPage() {
                   </h3>
                   <ScrollArea className="w-full rounded-md border bg-muted/30 p-4 text-sm" id="summary-scroll-area-pembelajaran-insight">
                     {summary.pembelajaranInsight.map((item, index) => (
-                      <div key={`insight-${index}`} className="rounded-md border border-border/50 p-2.5 bg-background/30 mb-3 last:mb-0">
-                         <p className="whitespace-pre-wrap leading-relaxed text-foreground/80">
-                          {item.judul && <strong className="text-foreground/95" dangerouslySetInnerHTML={{ __html: formatSummaryText(item.judul) + ": " }} />}
-                          {item.penjelasan && <span dangerouslySetInnerHTML={{ __html: formatSummaryText(item.penjelasan) }} />}
-                        </p>
-                      </div>
+                       <p key={`insight-${index}`} className="whitespace-pre-wrap leading-relaxed text-foreground/80 mb-3 last:mb-0">
+                        {item.judul && <strong className="text-foreground/95" dangerouslySetInnerHTML={{ __html: formatSummaryText(item.judul) + ": " }} />}
+                        {item.penjelasan && <span dangerouslySetInnerHTML={{ __html: formatSummaryText(item.penjelasan) }} />}
+                      </p>
                     ))}
                   </ScrollArea>
                 </div>
@@ -363,3 +359,5 @@ export default function TubeDigestPage() {
     </div>
   );
 }
+
+    
