@@ -5,7 +5,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Logo } from '@/components/Logo';
+// Logo component is no longer needed here for the SVG icon
 import { GithubIcon, InfoIcon } from 'lucide-react';
 import { ModelProvider } from '@/contexts/ModelContext';
 import { ModelSelectorDropdown } from '@/components/ModelSelectorDropdown';
@@ -39,10 +39,10 @@ export default function RootLayout({
             <div className="relative flex min-h-screen flex-col">
               <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex justify-center items-center">
                 <div className="w-[80%] mx-auto flex h-14 items-center justify-between">
-                  <div className="flex items-center space-x-4"> {/* Increased space-x for better separation */}
+                  <div className="flex items-center space-x-4">
                     <Link href="/" className="flex items-center space-x-2">
-                      <Logo className="h-10 w-10 text-primary" />
-                      <span className="font-bold text-lg">NZDigest</span>
+                      {/* Removed Logo component from here */}
+                      <span className="font-bold text-lg text-primary">NZDigest</span>
                     </Link>
                     <ModelSelectorDropdown />
                   </div>
