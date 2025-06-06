@@ -77,11 +77,11 @@ Transkrip Video:
 
 Mohon berikan ringkasan dalam format JSON seperti contoh di atas. Jangan awali respons Anda dengan frasa seperti "Berikut adalah ringkasan...". Langsung ke objek JSON. Pastikan semua string dalam JSON di-escape dengan benar. Berikan contoh spesifik dari transkrip jika relevan untuk memperjelas poin. Output harus berupa objek JSON tunggal yang valid.`,
   config: {
-    model: 'googleai/gemini-1.5-flash-latest',
-    temperature: 0.3, // Lowered temperature for more structured output
+    // model: 'googleai/gemini-1.5-flash-latest', // Removed to use global default
+    temperature: 0.3,
     topP: 0.8,
     maxOutputTokens: 4000,
-    responseMimeType: 'application/json', // Request JSON output from Gemini
+    responseMimeType: 'application/json',
     safetySettings: [
       { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
       { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
@@ -105,13 +105,10 @@ const geminiSummarizeFlow = ai.defineFlow(
         console.error("[Gemini Flow] Gemini prompt returned no output.");
         throw new Error('Gemini prompt returned no output.');
       }
-      // Zod validation is implicitly handled by Genkit when output.schema is defined for the prompt.
-      // If the output from Gemini doesn't match the schema, Genkit would typically throw an error.
       console.log("[Gemini Flow] Output from Gemini prompt received and implicitly validated by Genkit against schema.");
       return output;
     } catch (error: any) {
       console.error('[Gemini Flow] Error during Gemini prompt execution:', error.message, error.stack);
-      // Log the error details if available, especially if it's a validation error from Genkit/Google API
       if (error.details) {
         console.error('[Gemini Flow] Error details:', error.details);
       }
