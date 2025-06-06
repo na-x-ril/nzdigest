@@ -9,8 +9,9 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader2, YoutubeIcon, FileTextIcon, SparklesIcon, AlertCircle } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from "@/hooks/use-toast";
-import type { SummarizeTranscriptOutput } from '@/ai/flows/summarize-transcript-flow';
+import type { SummarizeTranscriptOutput } from '@/ai/schemas/transcript-summary-schemas';
 import { cn } from '@/lib/utils';
+import { useModel } from '@/contexts/ModelContext';
 
 function formatSummaryText(text: string | undefined | null): string {
   if (!text) return '';
@@ -41,6 +42,7 @@ export default function TubeDigestPage() {
   const [isLoadingSummary, setIsLoadingSummary] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const { selectedModel } = useModel();
 
   const handleSubmit = async () => {
     setError(null);
@@ -122,8 +124,8 @@ export default function TubeDigestPage() {
 
     setIsLoadingTranscript(false);
 
-    if (!transcriptFetched) {
-      setError(finalErrorForDisplay || "An unknown error occurred while fetching the transcript.");
+    if (!transcriptFetched || !fetchedTranscriptContent.trim()) {
+      setError(finalErrorForDisplay || "An unknown error occurred while fetching the transcript, or transcript is empty.");
       setTranscript(''); 
       setSummary(null);   
       return; 
@@ -133,11 +135,28 @@ export default function TubeDigestPage() {
     setTranscript(fetchedTranscriptContent);
     
     setIsLoadingSummary(true);
+
+    // Client-side validation for selectedModel
+    if (!selectedModel || typeof selectedModel !== 'string' || selectedModel.trim().length === 0) {
+      const clientErrorMsg = `Client-side: Invalid AI model selected. Value: '${selectedModel}', Type: ${typeof selectedModel}. Please select a model or refresh.`;
+      console.error(clientErrorMsg);
+      setError("An AI model must be selected. Please check the dropdown or refresh the page.");
+      toast({
+        title: "Model Selection Error",
+        description: "An AI model must be selected. Please check the dropdown.",
+        variant: "destructive",
+      });
+      setIsLoadingSummary(false); // Reset loading state
+      return; // Stop execution
+    }
+
+    console.log(`[TubeDigestPage] Attempting to call /api/summarize with model: '${selectedModel}' and transcript length: ${fetchedTranscriptContent.length}`);
+
     try {
       const summaryResponse = await fetch('/api/summarize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ transcript: fetchedTranscriptContent }),
+        body: JSON.stringify({ transcript: fetchedTranscriptContent, model: selectedModel }),
       });
 
       const summaryData = await summaryResponse.json();
