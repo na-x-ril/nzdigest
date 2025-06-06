@@ -5,7 +5,7 @@ export function Logo(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 90 56" // Adjusted viewBox for "NZD"
+      viewBox="0 0 75 56" // Adjusted viewBox for "NZD" connected look
       {...props}
     >
       <text
@@ -19,7 +19,7 @@ export function Logo(props: SVGProps<SVGSVGElement>) {
         N
       </text>
       <text
-        x="30" // Position for "Z"
+        x="22" // Adjusted x for "Z" to connect with "N"
         y="43" // Adjusted y
         fontFamily="Inter, sans-serif, Arial"
         fontSize="50"
@@ -29,7 +29,7 @@ export function Logo(props: SVGProps<SVGSVGElement>) {
         Z
       </text>
       <text
-        x="60" // Position for "D"
+        x="44" // Adjusted x for "D" to connect with "Z"
         y="43" // Adjusted y
         fontFamily="Inter, sans-serif, Arial"
         fontSize="50"
