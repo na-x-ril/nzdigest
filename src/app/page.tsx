@@ -327,13 +327,6 @@ export default function NZDigestPage() {
             </Button>
           </div>
 
-          {error && (
-            <Alert variant="destructive" className="shadow-md mt-4" id="error-alert-section">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
 
           {videoDetails && (
             <Card className="mt-6 bg-muted/20 shadow-md" id="video-details-collapsible-card">
@@ -375,8 +368,7 @@ export default function NZDigestPage() {
             </Card>
           )}
 
-
-          {transcript && !error && (
+          {transcript && (
             <div id="transcript-section" className="space-y-3 pt-4">
               <CardTitle className="flex items-center text-2xl font-headline">
                 <FileTextIcon className="mr-3 h-6 w-6 text-primary" /> Transcript
@@ -387,7 +379,7 @@ export default function NZDigestPage() {
             </div>
           )}
           
-          {summary && typeof summary === 'object' && summary.topikUtama && !error && (
+          {summary && typeof summary === 'object' && summary.topikUtama && (
             <div id="summary-section" className="space-y-6 pt-6">
               <CardTitle className="flex items-center text-2xl font-headline mb-4">
                 <SparklesIcon className="mr-3 h-6 w-6 text-primary" /> Detail Ringkasan
@@ -458,6 +450,14 @@ export default function NZDigestPage() {
                 </ScrollArea>
               </div>
             </div>
+          )}
+
+          {error && (
+            <Alert variant="destructive" className="shadow-md mt-4" id="error-alert-section">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
           )}
         </CardContent>
          <CardFooter className="text-center text-xs text-muted-foreground pt-4 pb-6">
