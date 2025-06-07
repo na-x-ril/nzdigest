@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2, FileTextIcon, SparklesIcon, AlertCircle, ListChecksIcon, KeyIcon, LightbulbIcon, CheckSquareIcon } from 'lucide-react';
+import { Loader2, FileTextIcon, SparklesIcon, AlertCircle, ListChecksIcon, KeyIcon, LightbulbIcon, CheckSquareIcon, YoutubeIcon, UserIcon, CalendarDaysIcon, InfoIcon } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from "@/hooks/use-toast";
 import type { SummarizeTranscriptOutput } from '@/ai/schemas/transcript-summary-schemas';
@@ -54,10 +54,17 @@ async function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+interface VideoDetails {
+  title?: string;
+  channelName?: string;
+  uploadDate?: string;
+}
+
 export default function NZDigestPage() {
   const [youtubeUrl, setYoutubeUrl] = useState('');
   const [transcript, setTranscript] = useState('');
   const [summary, setSummary] = useState<SummarizeTranscriptOutput | null>(null);
+  const [videoDetails, setVideoDetails] = useState<VideoDetails | null>(null);
   const [isLoadingTranscript, setIsLoadingTranscript] = useState(false);
   const [isLoadingSummary, setIsLoadingSummary] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -83,6 +90,7 @@ export default function NZDigestPage() {
     setError(null);
     setTranscript('');
     setSummary(null);
+    setVideoDetails(null);
 
     if (!youtubeUrl) {
       setError("Please enter a YouTube URL.");
@@ -112,12 +120,13 @@ export default function NZDigestPage() {
     setIsLoadingTranscript(true);
     let transcriptFetched = false;
     let fetchedTranscriptContent = '';
+    let fetchedVideoDetails: VideoDetails | null = null;
     let finalErrorForDisplay: string | null = null;
 
     for (let attempt = 1; attempt <= MAX_TRANSCRIPT_RETRIES; attempt++) {
       try {
         toast({
-          title: "Fetching Transcript",
+          title: "Fetching Transcript & Details",
           description: `Attempt ${attempt} of ${MAX_TRANSCRIPT_RETRIES}...`,
         });
         const transcriptResponse = await fetch('/api/transcript', {
@@ -127,6 +136,14 @@ export default function NZDigestPage() {
         });
 
         const responseBody = await transcriptResponse.json();
+
+        if (responseBody.videoTitle || responseBody.channelName || responseBody.uploadDate) {
+          fetchedVideoDetails = {
+            title: responseBody.videoTitle,
+            channelName: responseBody.channelName,
+            uploadDate: responseBody.uploadDate,
+          };
+        }
 
         if (!transcriptResponse.ok) {
           const errorMessage = responseBody.error || `Failed to fetch transcript (status: ${transcriptResponse.status})`;
@@ -143,8 +160,8 @@ export default function NZDigestPage() {
         transcriptFetched = true;
         finalErrorForDisplay = null; 
         toast({
-          title: "Transcript Fetched",
-          description: "Successfully fetched the video transcript.",
+          title: "Transcript & Details Fetched",
+          description: "Successfully fetched video transcript and details.",
         });
         break; 
       } catch (e: any) {
@@ -157,15 +174,15 @@ export default function NZDigestPage() {
 
         if (attempt < MAX_TRANSCRIPT_RETRIES) {
           toast({
-            title: "Transcript Fetch Failed",
+            title: "Fetch Failed",
             description: `Attempt ${attempt} failed: ${finalErrorForDisplay}. Retrying...`,
             variant: "destructive",
           });
           await sleep(RETRY_DELAY_MS);
         } else {
           toast({
-            title: "Transcript Error",
-            description: `Failed to fetch transcript after ${attempt} attempts: ${finalErrorForDisplay}`,
+            title: "Fetch Error",
+            description: `Failed to fetch transcript/details after ${attempt} attempts: ${finalErrorForDisplay}`,
             variant: "destructive",
           });
         }
@@ -173,11 +190,16 @@ export default function NZDigestPage() {
     }
 
     setIsLoadingTranscript(false);
+    
+    if (fetchedVideoDetails) {
+      setVideoDetails(fetchedVideoDetails);
+    }
 
     if (!transcriptFetched || !fetchedTranscriptContent.trim()) {
       setError(finalErrorForDisplay || "Could not fetch transcript or transcript is empty. The video might not have transcripts available, or it's too short.");
       setTranscript(''); 
       setSummary(null);   
+      // Do not clear videoDetails if they were partially fetched
       return; 
     }
     
@@ -198,8 +220,7 @@ export default function NZDigestPage() {
 
       if (!summaryResponse.ok) {
         const errorMsg = summaryData.error || `Failed to generate summary (status: ${summaryResponse.status})`;
-        let fullErrorDetails = summaryData.details || errorMsg; // Use details if available for more context
-        // We pass the fullErrorDetails to the Error constructor so that we can parse it below if needed
+        let fullErrorDetails = summaryData.details || errorMsg;
         throw new Error(fullErrorDetails);
       }
       setSummary(summaryData);
@@ -210,7 +231,7 @@ export default function NZDigestPage() {
     } catch (summaryError: any) {
       let displayError = "An unexpected error occurred while generating the summary.";
       if (summaryError && typeof summaryError.message === 'string') {
-          const errorMessageContent = summaryError.message; // This might contain the JSON string
+          const errorMessageContent = summaryError.message; 
           const lowerMessage = errorMessageContent.toLowerCase();
           const isGroqModelSelected = selectedModel.startsWith('llama') || selectedModel.startsWith('meta-llama') || selectedModel.startsWith('deepseek') || selectedModel.startsWith('qwen');
 
@@ -221,8 +242,7 @@ export default function NZDigestPage() {
             let limit = "N/A";
             let requested = "N/A";
             try {
-                // Attempt to extract the JSON part of the error
-                const jsonErrorMatch = errorMessageContent.match(/{.*}/);
+                const jsonErrorMatch = errorMessageContent.match(/{.*}/s); // Added 's' flag
                 if (jsonErrorMatch && jsonErrorMatch[0]) {
                     const errorDetails = JSON.parse(jsonErrorMatch[0]);
                     if (errorDetails.error && errorDetails.error.message) {
@@ -244,7 +264,7 @@ export default function NZDigestPage() {
           } else if (lowerMessage.includes('model selection is required') || lowerMessage.includes('unsupported model')) {
               displayError = "Please select a valid AI model from the dropdown menu before generating a summary.";
           } else {
-              displayError = errorMessageContent; // Use the specific error message if not handled above
+              displayError = errorMessageContent; 
           }
       }
       setError(displayError);
@@ -263,7 +283,7 @@ export default function NZDigestPage() {
     <div className="flex flex-col items-center justify-start bg-background p-4 sm:pt-12">
       <Card className="w-full max-w-2xl shadow-2xl rounded-lg" id="main-content-card">
         <CardHeader className="text-center">
-          <div className="flex justify-center items-center my-4">
+           <div className="flex justify-center items-center my-4">
              <h1 className="text-7xl font-bold text-primary" style={{ letterSpacing: '-0.075em' }}>
                 NZD
               </h1>
@@ -302,7 +322,7 @@ export default function NZDigestPage() {
               {(isLoadingTranscript || isLoadingSummary) ? (
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
               ) : null}
-              {isLoadingTranscript ? 'Fetching Transcript...' : isLoadingSummary ? 'Generating Summary...' : 'Digest Video'}
+              {isLoadingTranscript ? 'Fetching Details...' : isLoadingSummary ? 'Generating Summary...' : 'Digest Video'}
             </Button>
           </div>
 
@@ -313,6 +333,41 @@ export default function NZDigestPage() {
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
+
+          {videoDetails && (
+            <Card className="mt-6 bg-muted/20 shadow-md" id="video-details-card">
+              <CardHeader className="pb-3 pt-4 px-4">
+                <CardTitle className="text-xl font-headline flex items-center">
+                  <InfoIcon className="mr-2 h-5 w-5 text-primary" />
+                  Video Details
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm space-y-1.5 px-4 pb-4">
+                {videoDetails.title && (
+                  <div className="flex items-center">
+                    <YoutubeIcon className="mr-2 h-4 w-4 text-primary/80 flex-shrink-0" />
+                    <span className="font-medium">Title:</span>
+                    <span className="ml-1.5 text-foreground/90">{videoDetails.title}</span>
+                  </div>
+                )}
+                {videoDetails.channelName && (
+                  <div className="flex items-center">
+                    <UserIcon className="mr-2 h-4 w-4 text-primary/80 flex-shrink-0" />
+                    <span className="font-medium">Channel:</span>
+                    <span className="ml-1.5 text-foreground/90">{videoDetails.channelName}</span>
+                  </div>
+                )}
+                {videoDetails.uploadDate && (
+                  <div className="flex items-center">
+                    <CalendarDaysIcon className="mr-2 h-4 w-4 text-primary/80 flex-shrink-0" />
+                    <span className="font-medium">Uploaded:</span>
+                    <span className="ml-1.5 text-foreground/90">{videoDetails.uploadDate}</span>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
 
           {transcript && !error && (
             <div id="transcript-section" className="space-y-3 pt-4">
@@ -405,7 +460,3 @@ export default function NZDigestPage() {
     </div>
   );
 }
-
-    
-
-    
