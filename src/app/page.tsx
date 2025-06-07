@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader2, FileTextIcon, SparklesIcon, AlertCircle, ListChecksIcon, KeyIcon, LightbulbIcon, CheckSquareIcon, YoutubeIcon, UserIcon, CalendarDaysIcon, InfoIcon } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useToast } from "@/hooks/use-toast";
 import type { SummarizeTranscriptOutput } from '@/ai/schemas/transcript-summary-schemas';
 import { cn } from '@/lib/utils';
@@ -242,7 +243,7 @@ export default function NZDigestPage() {
             let limit = "N/A";
             let requested = "N/A";
             try {
-                const jsonErrorMatch = errorMessageContent.match(/{.*}/s); // Added 's' flag
+                const jsonErrorMatch = errorMessageContent.match(/{.*}/s); 
                 if (jsonErrorMatch && jsonErrorMatch[0]) {
                     const errorDetails = JSON.parse(jsonErrorMatch[0]);
                     if (errorDetails.error && errorDetails.error.message) {
@@ -335,36 +336,42 @@ export default function NZDigestPage() {
           )}
 
           {videoDetails && (
-            <Card className="mt-6 bg-muted/20 shadow-md" id="video-details-card">
-              <CardHeader className="pb-3 pt-4 px-4">
-                <CardTitle className="text-xl font-headline flex items-center">
-                  <InfoIcon className="mr-2 h-5 w-5 text-primary" />
-                  Video Details
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="text-sm space-y-1.5 px-4 pb-4">
-                {videoDetails.title && (
-                  <div className="flex items-center">
-                    <YoutubeIcon className="mr-2 h-4 w-4 text-primary/80 flex-shrink-0" />
-                    <span className="font-medium">Title:</span>
-                    <span className="ml-1.5 text-foreground/90">{videoDetails.title}</span>
-                  </div>
-                )}
-                {videoDetails.channelName && (
-                  <div className="flex items-center">
-                    <UserIcon className="mr-2 h-4 w-4 text-primary/80 flex-shrink-0" />
-                    <span className="font-medium">Channel:</span>
-                    <span className="ml-1.5 text-foreground/90">{videoDetails.channelName}</span>
-                  </div>
-                )}
-                {videoDetails.uploadDate && (
-                  <div className="flex items-center">
-                    <CalendarDaysIcon className="mr-2 h-4 w-4 text-primary/80 flex-shrink-0" />
-                    <span className="font-medium">Uploaded:</span>
-                    <span className="ml-1.5 text-foreground/90">{videoDetails.uploadDate}</span>
-                  </div>
-                )}
-              </CardContent>
+            <Card className="mt-6 bg-muted/20 shadow-md" id="video-details-collapsible-card">
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="video-details" className="border-b-0">
+                  <AccordionTrigger className="py-3 px-4 hover:no-underline">
+                    <CardTitle className="text-xl font-headline flex items-center">
+                      <InfoIcon className="mr-2 h-5 w-5 text-primary" />
+                      Video Details
+                    </CardTitle>
+                  </AccordionTrigger>
+                  <AccordionContent className="pb-0">
+                    <CardContent className="text-sm space-y-1.5 px-4 pb-4 pt-1">
+                      {videoDetails.title && (
+                        <div className="flex items-start">
+                          <YoutubeIcon className="mr-2 h-4 w-4 text-primary/80 flex-shrink-0 mt-0.5" />
+                          <span className="font-medium">Title:</span>
+                          <span className="ml-1.5 text-foreground/90 break-words">{videoDetails.title}</span>
+                        </div>
+                      )}
+                      {videoDetails.channelName && (
+                        <div className="flex items-start">
+                          <UserIcon className="mr-2 h-4 w-4 text-primary/80 flex-shrink-0 mt-0.5" />
+                          <span className="font-medium">Channel:</span>
+                          <span className="ml-1.5 text-foreground/90 break-words">{videoDetails.channelName}</span>
+                        </div>
+                      )}
+                      {videoDetails.uploadDate && (
+                        <div className="flex items-start">
+                          <CalendarDaysIcon className="mr-2 h-4 w-4 text-primary/80 flex-shrink-0 mt-0.5" />
+                          <span className="font-medium">Uploaded:</span>
+                          <span className="ml-1.5 text-foreground/90 break-words">{videoDetails.uploadDate}</span>
+                        </div>
+                      )}
+                    </CardContent>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </Card>
           )}
 
@@ -460,3 +467,4 @@ export default function NZDigestPage() {
     </div>
   );
 }
+
