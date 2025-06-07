@@ -243,7 +243,7 @@ export default function NZDigestPage() {
             let limit = "N/A";
             let requested = "N/A";
             try {
-                const jsonErrorMatch = errorMessageContent.match(/{.*}/s); 
+                const jsonErrorMatch = errorMessageContent.match(/{.*}/s);
                 if (jsonErrorMatch && jsonErrorMatch[0]) {
                     const errorDetails = JSON.parse(jsonErrorMatch[0]);
                     if (errorDetails.error && errorDetails.error.message) {
@@ -289,8 +289,8 @@ export default function NZDigestPage() {
                 NZD
               </h1>
           </div>
-          <CardTitle className="flex justify-center text-4xl font-headline tracking-tight gap-2">
-            <span style={{ letterSpacing: '-0.075em' }}>NZD</span><span className="ml-[4px] text-primary">igest</span>
+          <CardTitle className="flex justify-center text-4xl font-headline tracking-tight">
+            <span style={{ letterSpacing: '-0.075em' }}>NZD</span><span className="ml-[3px] text-primary">igest</span>
           </CardTitle>
           <CardDescription className="text-lg">
             Enter a YouTube URL to get its transcript and a concise AI-powered summary.
