@@ -148,7 +148,7 @@ export default function NZDigestPage() {
         });
         break; 
       } catch (e: any) {
-        finalErrorForDisplay = e.message;
+        finalErrorForDisplay = e.message || "An unknown error occurred while fetching transcript.";
         
         if (e.message && e.message.includes('Invalid YouTube URL format.')) {
             transcriptFetched = false;
@@ -158,7 +158,7 @@ export default function NZDigestPage() {
         if (attempt < MAX_TRANSCRIPT_RETRIES) {
           toast({
             title: "Transcript Fetch Failed",
-            description: `Attempt ${attempt} failed: ${e.message}. Retrying...`,
+            description: `Attempt ${attempt} failed: ${finalErrorForDisplay}. Retrying...`,
             variant: "destructive",
           });
           await sleep(RETRY_DELAY_MS);
@@ -175,7 +175,7 @@ export default function NZDigestPage() {
     setIsLoadingTranscript(false);
 
     if (!transcriptFetched || !fetchedTranscriptContent.trim()) {
-      setError(finalErrorForDisplay || "An unknown error occurred while fetching the transcript, or transcript is empty.");
+      setError(finalErrorForDisplay || "Could not fetch transcript or transcript is empty. The video might not have transcripts available, or it's too short.");
       setTranscript(''); 
       setSummary(null);   
       return; 
@@ -197,7 +197,9 @@ export default function NZDigestPage() {
       const summaryData = await summaryResponse.json();
 
       if (!summaryResponse.ok) {
-        throw new Error(summaryData.error || 'Failed to generate summary');
+        // Prefer error from response body if available
+        const errorMsg = summaryData.error || `Failed to generate summary (status: ${summaryResponse.status})`;
+        throw new Error(errorMsg);
       }
       setSummary(summaryData);
       toast({
@@ -205,11 +207,31 @@ export default function NZDigestPage() {
         description: "Successfully generated the video summary.",
       });
     } catch (summaryError: any) {
-      setError(summaryError.message);
+      let displayError = "An unexpected error occurred while generating the summary.";
+      if (summaryError && typeof summaryError.message === 'string') {
+          const lowerMessage = summaryError.message.toLowerCase();
+          const isGroqModelSelected = selectedModel.startsWith('llama') || selectedModel.startsWith('meta-llama') || selectedModel.startsWith('deepseek') || selectedModel.startsWith('qwen');
+
+          if (
+            (lowerMessage.includes('413') || lowerMessage.includes('request too large') || lowerMessage.includes('rate_limit_exceeded') || lowerMessage.includes('reduce your message size')) &&
+            isGroqModelSelected
+          ) {
+            displayError = "The video transcript is too long for the selected AI model. Please try a different model (e.g., Gemini Flash) or choose a shorter video.";
+          } else if (lowerMessage.includes('failed to generate summary content') || lowerMessage.includes('unexpected format') || lowerMessage.includes('did not match expected schema')) {
+            displayError = "The AI model couldn't process the transcript or returned an unexpected response. This can sometimes happen with complex or unusual video content. You could try again, select a different AI model, or use a different video.";
+          } else if (lowerMessage.includes('transcript cannot be empty')) {
+              displayError = "The transcript provided was empty. A summary cannot be generated without content.";
+          } else if (lowerMessage.includes('model selection is required') || lowerMessage.includes('unsupported model')) {
+              displayError = "Please select a valid AI model from the dropdown menu before generating a summary.";
+          } else if (summaryError.message) {
+              displayError = summaryError.message; // Use the specific error message from the API if not handled above
+          }
+      }
+      setError(displayError);
       setSummary(null); 
       toast({
         title: "Summarization Error",
-        description: summaryError.message,
+        description: displayError,
         variant: "destructive",
       });
     } finally {
@@ -221,15 +243,14 @@ export default function NZDigestPage() {
     <div className="flex flex-col items-center justify-start bg-background p-4 sm:pt-12">
       <Card className="w-full max-w-2xl shadow-2xl rounded-lg" id="main-content-card">
         <CardHeader className="text-center">
-          <div className="flex justify-center items-center my-4"> {/* Added margin-top/bottom for spacing */}
-            <h1 className="text-7xl font-bold text-primary" style={{ letterSpacing: '-0.120em' }}>
-              NZD
-            </h1>
+          <div className="flex justify-center items-center my-4">
+             <h1 className="text-7xl font-bold text-primary" style={{ letterSpacing: '-0.075em' }}>
+                NZD
+              </h1>
           </div>
-          <span className="font-bold text-4xl text-primary">
-            <span style={{ letterSpacing: '-0.120em' }}>NZD</span>
-            <span className="ml-[4px] text-primary">igest</span>
-          </span>
+          <CardTitle className="flex justify-center text-4xl font-headline tracking-tight gap-2">
+            <span style={{ letterSpacing: '-0.075em' }}>NZD</span><span className="ml-[4px] text-primary">igest</span>
+          </CardTitle>
           <CardDescription className="text-lg">
             Enter a YouTube URL to get its transcript and a concise AI-powered summary.
           </CardDescription>
@@ -364,3 +385,5 @@ export default function NZDigestPage() {
     </div>
   );
 }
+
+    
