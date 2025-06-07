@@ -197,9 +197,10 @@ export default function NZDigestPage() {
       const summaryData = await summaryResponse.json();
 
       if (!summaryResponse.ok) {
-        // Prefer error from response body if available
         const errorMsg = summaryData.error || `Failed to generate summary (status: ${summaryResponse.status})`;
-        throw new Error(errorMsg);
+        let fullErrorDetails = summaryData.details || errorMsg; // Use details if available for more context
+        // We pass the fullErrorDetails to the Error constructor so that we can parse it below if needed
+        throw new Error(fullErrorDetails);
       }
       setSummary(summaryData);
       toast({
@@ -209,22 +210,41 @@ export default function NZDigestPage() {
     } catch (summaryError: any) {
       let displayError = "An unexpected error occurred while generating the summary.";
       if (summaryError && typeof summaryError.message === 'string') {
-          const lowerMessage = summaryError.message.toLowerCase();
+          const errorMessageContent = summaryError.message; // This might contain the JSON string
+          const lowerMessage = errorMessageContent.toLowerCase();
           const isGroqModelSelected = selectedModel.startsWith('llama') || selectedModel.startsWith('meta-llama') || selectedModel.startsWith('deepseek') || selectedModel.startsWith('qwen');
 
           if (
             (lowerMessage.includes('413') || lowerMessage.includes('request too large') || lowerMessage.includes('rate_limit_exceeded') || lowerMessage.includes('reduce your message size')) &&
             isGroqModelSelected
           ) {
-            displayError = "The video transcript is too long for the selected AI model. Please try a different model (e.g., Gemini Flash) or choose a shorter video.";
+            let limit = "N/A";
+            let requested = "N/A";
+            try {
+                // Attempt to extract the JSON part of the error
+                const jsonErrorMatch = errorMessageContent.match(/{.*}/);
+                if (jsonErrorMatch && jsonErrorMatch[0]) {
+                    const errorDetails = JSON.parse(jsonErrorMatch[0]);
+                    if (errorDetails.error && errorDetails.error.message) {
+                        const detailMsg = errorDetails.error.message;
+                        const limitMatch = detailMsg.match(/Limit (\d+)/);
+                        const requestedMatch = detailMsg.match(/Requested (\d+)/);
+                        if (limitMatch && limitMatch[1]) limit = limitMatch[1];
+                        if (requestedMatch && requestedMatch[1]) requested = requestedMatch[1];
+                    }
+                }
+            } catch (e) {
+                console.warn("Could not parse token limit/requested from error message string:", e);
+            }
+            displayError = `The video transcript is too long for the selected AI model (Requested: ${requested} tokens, Limit: ${limit} tokens). Please try a different model (e.g., Gemini Flash) or choose a shorter video.`;
           } else if (lowerMessage.includes('failed to generate summary content') || lowerMessage.includes('unexpected format') || lowerMessage.includes('did not match expected schema')) {
             displayError = "The AI model couldn't process the transcript or returned an unexpected response. This can sometimes happen with complex or unusual video content. You could try again, select a different AI model, or use a different video.";
           } else if (lowerMessage.includes('transcript cannot be empty')) {
               displayError = "The transcript provided was empty. A summary cannot be generated without content.";
           } else if (lowerMessage.includes('model selection is required') || lowerMessage.includes('unsupported model')) {
               displayError = "Please select a valid AI model from the dropdown menu before generating a summary.";
-          } else if (summaryError.message) {
-              displayError = summaryError.message; // Use the specific error message from the API if not handled above
+          } else {
+              displayError = errorMessageContent; // Use the specific error message if not handled above
           }
       }
       setError(displayError);
@@ -385,5 +405,7 @@ export default function NZDigestPage() {
     </div>
   );
 }
+
+    
 
     
