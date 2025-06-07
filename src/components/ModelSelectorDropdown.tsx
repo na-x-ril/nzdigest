@@ -50,18 +50,21 @@ export function ModelSelectorDropdown() {
           variant="outline" 
           className={cn(
             "flex items-center gap-2 pl-3 pr-2 h-10",
+            "max-w-[130px] sm:max-w-none", // Constrain width on mobile, allow expansion on sm+
             "bg-background/80 backdrop-blur-sm supports-[backdrop-filter]:bg-background/60 hover:bg-accent/70"
           )}
         >
-          <CurrentModelIcon className="h-4 w-4" />
-          <span className="text-sm font-medium">{modelDisplayNames[selectedModel] || selectedModel}</span>
-          <ChevronDownIcon className="h-4 w-4 opacity-70" />
+          <CurrentModelIcon className="h-4 w-4 flex-shrink-0" />
+          <span className="truncate min-w-0"> {/* Ensures text truncates if button width is constrained */}
+            {modelDisplayNames[selectedModel] || selectedModel}
+          </span>
+          <ChevronDownIcon className="h-4 w-4 opacity-70 flex-shrink-0" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent 
         className={cn(
           "w-80", 
-          "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70 text-foreground border-border/80"
+          "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70 text-foreground border-border/70" 
         )}
       >
         <DropdownMenuLabel>Pilih Model AI</DropdownMenuLabel>
@@ -70,23 +73,23 @@ export function ModelSelectorDropdown() {
           value={selectedModel}
           onValueChange={(value) => setSelectedModel(value as Model)}
         >
-          <DropdownMenuRadioItem value={geminiFlash} className="flex items-center gap-2.5 cursor-pointer py-2 focus:bg-accent/70">
+          <DropdownMenuRadioItem value={geminiFlash} className="flex items-center gap-2.5 cursor-pointer py-2 focus:bg-accent/60">
             <ZapIcon className="h-4 w-4 text-primary" />
             <span>{modelDisplayNames[geminiFlash]}</span>
           </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value={llama3Groq70b} className="flex items-center gap-2.5 cursor-pointer py-2 focus:bg-accent/70">
+          <DropdownMenuRadioItem value={llama3Groq70b} className="flex items-center gap-2.5 cursor-pointer py-2 focus:bg-accent/60">
             <BrainCircuitIcon className="h-4 w-4 text-primary" />
             <span>{modelDisplayNames[llama3Groq70b]}</span>
           </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value={llama4Scout} className="flex items-center gap-2.5 cursor-pointer py-2 focus:bg-accent/70">
+          <DropdownMenuRadioItem value={llama4Scout} className="flex items-center gap-2.5 cursor-pointer py-2 focus:bg-accent/60">
             <BrainCircuitIcon className="h-4 w-4 text-primary" />
             <span>{modelDisplayNames[llama4Scout]}</span>
           </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value={deepseekR1} className="flex items-center gap-2.5 cursor-pointer py-2 focus:bg-accent/70">
+          <DropdownMenuRadioItem value={deepseekR1} className="flex items-center gap-2.5 cursor-pointer py-2 focus:bg-accent/60">
             <BrainCircuitIcon className="h-4 w-4 text-primary" />
             <span>{modelDisplayNames[deepseekR1]}</span>
           </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value={qwenQwq} className="flex items-center gap-2.5 cursor-pointer py-2 focus:bg-accent/70">
+          <DropdownMenuRadioItem value={qwenQwq} className="flex items-center gap-2.5 cursor-pointer py-2 focus:bg-accent/60">
             <BrainCircuitIcon className="h-4 w-4 text-primary" />
             <span>{modelDisplayNames[qwenQwq]}</span>
           </DropdownMenuRadioItem>
