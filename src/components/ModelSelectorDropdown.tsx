@@ -2,6 +2,7 @@
 "use client";
 
 import * as React from "react";
+import {useTranslations} from 'next-intl';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +19,7 @@ import { cn } from "@/lib/utils";
 
 export function ModelSelectorDropdown() {
   const { selectedModel, setSelectedModel } = useModel();
+  const t = useTranslations('ModelSelector');
  
   const geminiFlash = "gemini-flash" as const;
   const llama3Groq70b = 'llama3-70b-8192' as const; 
@@ -67,7 +69,7 @@ export function ModelSelectorDropdown() {
           "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70 text-foreground border-border/70" 
         )}
       >
-        <DropdownMenuLabel>Pilih Model AI</DropdownMenuLabel>
+        <DropdownMenuLabel>{t('label')}</DropdownMenuLabel>
         <DropdownMenuSeparator className="bg-border/50" />
         <DropdownMenuRadioGroup
           value={selectedModel}

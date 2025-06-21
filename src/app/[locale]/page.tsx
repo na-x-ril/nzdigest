@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
+import {useTranslations, useLocale} from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -62,6 +63,9 @@ interface VideoDetails {
 }
 
 export default function NZDigestPage() {
+  const t = useTranslations('HomePage');
+  const locale = useLocale();
+
   const [youtubeUrl, setYoutubeUrl] = useState('');
   const [transcript, setTranscript] = useState('');
   const [summary, setSummary] = useState<SummarizeTranscriptOutput | null>(null);
@@ -133,7 +137,7 @@ export default function NZDigestPage() {
         const transcriptResponse = await fetch('/api/transcript', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url: youtubeUrl }),
+          body: JSON.stringify({ url: youtubeUrl, language: locale }),
         });
 
         const responseBody = await transcriptResponse.json();
@@ -200,7 +204,6 @@ export default function NZDigestPage() {
       setError(finalErrorForDisplay || "Could not fetch transcript or transcript is empty. The video might not have transcripts available, or it's too short.");
       setTranscript(''); 
       setSummary(null);   
-      // Do not clear videoDetails if they were partially fetched
       return; 
     }
     
@@ -293,7 +296,7 @@ export default function NZDigestPage() {
             <span style={{ letterSpacing: '-0.13em' }}>NZD</span><span className="ml-[3px] text-primary">igest</span>
           </CardTitle>
           <CardDescription className="text-lg">
-            Enter a YouTube URL to get its transcript and a concise AI-powered summary.
+            {t('description')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-2 px-6 pt-0 pb-2">
@@ -323,7 +326,7 @@ export default function NZDigestPage() {
               {(isLoadingTranscript || isLoadingSummary) ? (
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
               ) : null}
-              {isLoadingTranscript ? 'Fetching Details...' : isLoadingSummary ? 'Generating Summary...' : 'Digest Video'}
+              {isLoadingTranscript ? t('digestButtonLoadingTranscript') : isLoadingSummary ? t('digestButtonLoadingSummary') : t('digestButton')}
             </Button>
           </div>
 
@@ -335,7 +338,7 @@ export default function NZDigestPage() {
                   <AccordionTrigger className="py-3 px-4 hover:no-underline">
                     <CardTitle className="text-xl font-headline flex items-center">
                       <InfoIcon className="mr-2 h-5 w-5 text-primary" />
-                      Video Details
+                      {t('videoDetails')}
                     </CardTitle>
                   </AccordionTrigger>
                   <AccordionContent className="pb-0">
@@ -371,7 +374,7 @@ export default function NZDigestPage() {
           {transcript && (
             <div id="transcript-section" className="space-y-3 pt-4">
               <CardTitle className="flex items-center text-2xl font-headline">
-                <FileTextIcon className="mr-3 h-6 w-6 text-primary" /> Transcript
+                <FileTextIcon className="mr-3 h-6 w-6 text-primary" /> {t('transcript')}
               </CardTitle>
               <ScrollArea className="h-64 w-full rounded-md border bg-muted/30 p-4" id="transcript-scroll-area">
                 <p className="text-sm whitespace-pre-wrap leading-relaxed pb-2">{transcript}</p>
@@ -382,12 +385,12 @@ export default function NZDigestPage() {
           {summary && typeof summary === 'object' && summary.topikUtama && (
             <div id="summary-section" className="space-y-6 pt-6">
               <CardTitle className="flex items-center text-2xl font-headline mb-4">
-                <SparklesIcon className="mr-3 h-6 w-6 text-primary" /> Detail Ringkasan
+                <SparklesIcon className="mr-3 h-6 w-6 text-primary" /> {t('summaryDetails')}
               </CardTitle>
               
               <div id="summary-section-topik-utama" className="space-y-2">
                 <h3 className="font-semibold text-lg flex items-center text-foreground/90">
-                  <SparklesIcon className="mr-2 h-5 w-5 text-primary/80" />Topik Utama
+                  <SparklesIcon className="mr-2 h-5 w-5 text-primary/80" />{t('mainTopic')}
                 </h3>
                 <ScrollArea className="w-full rounded-md border bg-muted/30 p-4 text-sm" id="summary-scroll-area-topik-utama">
                   <p className="whitespace-pre-wrap leading-relaxed" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.topikUtama) }} />
@@ -397,7 +400,7 @@ export default function NZDigestPage() {
               {summary.kronologiAlur && summary.kronologiAlur.length > 0 && (
                 <div id="summary-section-kronologi-alur" className="space-y-2">
                   <h3 className="font-semibold text-lg flex items-center text-foreground/90">
-                    <ListChecksIcon className="mr-2 h-5 w-5 text-primary/80" />Kronologi/Alur
+                    <ListChecksIcon className="mr-2 h-5 w-5 text-primary/80" />{t('chronology')}
                   </h3>
                   <ScrollArea className="w-full rounded-md border bg-muted/30 p-4 text-sm" id="summary-scroll-area-kronologi-alur">
                     <ul className="list-disc space-y-1.5 pl-5">
@@ -412,7 +415,7 @@ export default function NZDigestPage() {
               {summary.poinPoinKunci && summary.poinPoinKunci.length > 0 && (
                  <div id="summary-section-poin-kunci" className="space-y-2">
                     <h3 className="font-semibold text-lg flex items-center text-foreground/90">
-                        <KeyIcon className="mr-2 h-5 w-5 text-primary/80" />Poin-poin Kunci
+                        <KeyIcon className="mr-2 h-5 w-5 text-primary/80" />{t('keyPoints')}
                     </h3>
                     <ScrollArea className="w-full rounded-md border bg-muted/30 p-4 text-sm" id="summary-scroll-area-poin-kunci">
                         {summary.poinPoinKunci.map((item, index) => (
@@ -428,7 +431,7 @@ export default function NZDigestPage() {
               {summary.pembelajaranInsight && summary.pembelajaranInsight.length > 0 && (
                 <div id="summary-section-pembelajaran-insight" className="space-y-2">
                     <h3 className="font-semibold text-lg flex items-center text-foreground/90">
-                        <LightbulbIcon className="mr-2 h-5 w-5 text-primary/80" />Pembelajaran/Insight
+                        <LightbulbIcon className="mr-2 h-5 w-5 text-primary/80" />{t('insights')}
                     </h3>
                     <ScrollArea className="w-full rounded-md border bg-muted/30 p-4 text-sm" id="summary-scroll-area-pembelajaran-insight">
                         {summary.pembelajaranInsight.map((item, index) => (
@@ -443,7 +446,7 @@ export default function NZDigestPage() {
               
               <div id="summary-section-kesimpulan" className="space-y-2">
                 <h3 className="font-semibold text-lg flex items-center text-foreground/90">
-                  <CheckSquareIcon className="mr-2 h-5 w-5 text-primary/80" />Kesimpulan
+                  <CheckSquareIcon className="mr-2 h-5 w-5 text-primary/80" />{t('conclusion')}
                 </h3>
                 <ScrollArea className="w-full rounded-md border bg-muted/30 p-4 text-sm" id="summary-scroll-area-kesimpulan">
                   <p className="whitespace-pre-wrap leading-relaxed" dangerouslySetInnerHTML={{ __html: formatSummaryText(summary.kesimpulan) }} />
@@ -467,4 +470,3 @@ export default function NZDigestPage() {
     </div>
   );
 }
-

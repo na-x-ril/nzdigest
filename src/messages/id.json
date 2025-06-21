@@ -1,0 +1,60 @@
+
+{
+  "Layout": {
+    "title": "NZDigest - Peringkas YouTube",
+    "description": "Dapatkan transkrip dan ringkasan AI untuk video YouTube.",
+    "Footer": {
+      "builtBy": "Dibuat oleh Nazril.",
+      "copyright": "© {year} NZDigest. Semua hak dilindungi undang-undang.",
+      "about": "Tentang",
+      "github": "GitHub"
+    }
+  },
+  "HomePage": {
+    "description": "Masukkan URL YouTube untuk mendapatkan transkrip dan ringkasan ringkas yang didukung AI.",
+    "digestButton": "Cerna Video",
+    "digestButtonLoadingTranscript": "Mengambil Detail...",
+    "digestButtonLoadingSummary": "Menghasilkan Ringkasan...",
+    "videoDetails": "Detail Video",
+    "transcript": "Transkrip",
+    "summaryDetails": "Detail Ringkasan",
+    "mainTopic": "Topik Utama",
+    "chronology": "Kronologi/Alur",
+    "keyPoints": "Poin-poin Kunci",
+    "insights": "Pembelajaran/Insight",
+    "conclusion": "Kesimpulan"
+  },
+  "AboutPage": {
+    "title": "Tentang NZDigest",
+    "description": "Membuka wawasan dari video YouTube, satu ringkasan setiap kalinya.",
+    "whatIsItTitle": "Apa itu NZDigest?",
+    "whatIsItContent": "NZDigest adalah aplikasi web bertenaga AI yang dirancang untuk membantu Anda memahami konten video YouTube dengan cepat. Baik Anda seorang pelajar, peneliti, atau hanya ingin tahu, NZDigest menyediakan transkrip video dan ringkasan terstruktur yang mendetail untuk menghemat waktu Anda dan menyoroti informasi penting.",
+    "howItWorksTitle": "Cara Kerjanya",
+    "howItWorksContent": "Cukup tempelkan URL video YouTube ke NZDigest. Aplikasi akan:",
+    "howItWorksStep1": "Mengambil transkrip video jika tersedia.",
+    "howItWorksStep2": "Memanfaatkan model AI canggih (didukung oleh Genkit dan Gemini Google) untuk menganalisis transkrip.",
+    "howItWorksStep3": "Menghasilkan ringkasan komprehensif, yang dipecah menjadi bagian-bagian utama seperti topik utama, alur kronologis, poin-poin penting, pembelajaran, dan kesimpulan akhir.",
+    "howItWorksPostContent": "Ini memungkinkan Anda untuk memahami inti dari sebuah video tanpa menontonnya secara keseluruhan, atau untuk dengan cepat meninjau konsep-konsep penting dari konten yang sudah Anda lihat.",
+    "missionTitle": "Misi Kami",
+    "missionContent": "Misi kami adalah membuat informasi lebih mudah diakses dan pembelajaran lebih efisien. Kami percaya bahwa dengan memanfaatkan kekuatan AI, kami dapat membantu pengguna mengekstrak pengetahuan berharga dari lautan konten video online yang luas dengan cepat dan efektif.",
+    "techStackTitle": "Teknologi",
+    "techStackContent": "NZDigest dibangun dengan tumpukan teknologi modern termasuk:",
+    "techStackItem1": "Next.js untuk kerangka kerja frontend dan backend.",
+    "techStackItem2": "React dan TypeScript untuk membangun antarmuka pengguna.",
+    "techStackItem3": "Komponen UI ShadCN dan Tailwind CSS untuk penataan gaya.",
+    "techStackItem4": "Genkit dengan model Gemini Google untuk peringkasan bertenaga AI."
+  },
+  "LocaleSwitcher": {
+    "label": "Ubah bahasa",
+    "en": "Inggris",
+    "id": "Indonesia"
+  },
+  "ModelSelector": {
+    "label": "Pilih Model AI"
+  },
+  "NotFound": {
+    "title": "404 - Tidak Ditemukan",
+    "description": "Halaman yang diminta tidak dapat ditemukan.",
+    "returnHome": "Kembali ke Beranda"
+  }
+}

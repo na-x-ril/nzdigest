@@ -1,0 +1,60 @@
+
+{
+  "Layout": {
+    "title": "NZDigest - YouTube Summarizer",
+    "description": "Get transcripts and AI-powered summaries for YouTube videos.",
+    "Footer": {
+      "builtBy": "Built by Nazril.",
+      "copyright": "© {year} NZDigest. All rights reserved.",
+      "about": "About",
+      "github": "GitHub"
+    }
+  },
+  "HomePage": {
+    "description": "Enter a YouTube URL to get its transcript and a concise AI-powered summary.",
+    "digestButton": "Digest Video",
+    "digestButtonLoadingTranscript": "Fetching Details...",
+    "digestButtonLoadingSummary": "Generating Summary...",
+    "videoDetails": "Video Details",
+    "transcript": "Transcript",
+    "summaryDetails": "Summary Details",
+    "mainTopic": "Main Topic",
+    "chronology": "Chronology/Flow",
+    "keyPoints": "Key Points",
+    "insights": "Learnings/Insights",
+    "conclusion": "Conclusion"
+  },
+  "AboutPage": {
+    "title": "About NZDigest",
+    "description": "Unlocking insights from YouTube videos, one summary at a time.",
+    "whatIsItTitle": "What is NZDigest?",
+    "whatIsItContent": "NZDigest is an AI-powered web application designed to help you quickly understand the content of YouTube videos. Whether you're a student, researcher, or just curious, NZDigest provides video transcripts and detailed, structured summaries to save you time and highlight key information.",
+    "howItWorksTitle": "How It Works",
+    "howItWorksContent": "Simply paste a YouTube video URL into NZDigest. The application will:",
+    "howItWorksStep1": "Fetch the video's transcript if available.",
+    "howItWorksStep2": "Utilize advanced AI models (powered by Genkit and Google's Gemini) to analyze the transcript.",
+    "howItWorksStep3": "Generate a comprehensive summary, broken down into key sections like main topics, chronological flow, key points, learnings, and a final conclusion.",
+    "howItWorksPostContent": "This allows you to grasp the essence of a video without watching it in its entirety, or to quickly review important concepts from content you've already seen.",
+    "missionTitle": "Our Mission",
+    "missionContent": "Our mission is to make information more accessible and learning more efficient. We believe that by leveraging the power of AI, we can help users extract valuable knowledge from the vast ocean of online video content quickly and effectively.",
+    "techStackTitle": "Technology",
+    "techStackContent": "NZDigest is built with a modern tech stack including:",
+    "techStackItem1": "Next.js for the frontend and backend framework.",
+    "techStackItem2": "React and TypeScript for building the user interface.",
+    "techStackItem3": "ShadCN UI components and Tailwind CSS for styling.",
+    "techStackItem4": "Genkit with Google's Gemini models for AI-powered summarization."
+  },
+  "LocaleSwitcher": {
+    "label": "Change language",
+    "en": "English",
+    "id": "Indonesian"
+  },
+  "ModelSelector": {
+    "label": "Select AI Model"
+  },
+  "NotFound": {
+    "title": "404 - Not Found",
+    "description": "Could not find the requested page.",
+    "returnHome": "Return Home"
+  }
+}
