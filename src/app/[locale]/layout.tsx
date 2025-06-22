@@ -1,4 +1,3 @@
-
 import {NextIntlClientProvider} from 'next-intl';
 import {getMessages, getTranslations} from 'next-intl/server';
 import { Toaster } from "@/components/ui/toaster";
@@ -8,7 +7,7 @@ import { GithubIcon, InfoIcon } from 'lucide-react';
 import { ModelProvider } from '@/contexts/ModelContext';
 import { ModelSelectorDropdown } from '@/components/ModelSelectorDropdown';
 import LocaleSwitcher from '@/components/LocaleSwitcher';
-import { Link } from '@/navigation';
+import { Link } from '@/i18n/navigation';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({params: {locale}}: {params: {locale: string}}): Promise<Metadata> {
@@ -19,7 +18,6 @@ export async function generateMetadata({params: {locale}}: {params: {locale: str
     description: t('description'),
   };
 }
-
 
 export default async function LocaleLayout({
   children,
@@ -47,7 +45,7 @@ export default async function LocaleLayout({
                   <div className="flex items-center space-x-4">
                     <Link href="/" className="flex items-center space-x-0">
                       <span className="font-bold text-2xl text-primary">
-                        <span style={{ letterSpacing: '-0.120em' }}>NZD</span>
+                        <span style={{ letterSpacing: '-0.12em' }}>NZD</span>
                         <span className="ml-[2px] text-primary">igest</span>
                       </span>
                     </Link>
