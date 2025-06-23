@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
@@ -6,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2, FileTextIcon, SparklesIcon, AlertCircle, ListChecksIcon, KeyIcon, LightbulbIcon, CheckSquareIcon, YoutubeIcon, UserIcon, CalendarDaysIcon, InfoIcon } from 'lucide-react';
+import { Loader2, FileTextIcon, SparklesIcon, AlertCircle, ListChecksIcon, KeyIcon, LightbulbIcon, CheckSquareIcon, YoutubeIcon, UserIcon, CalendarDaysIcon, InfoIcon, EyeIcon } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useToast } from "@/hooks/use-toast";
@@ -59,6 +60,7 @@ interface VideoDetails {
   title?: string;
   channelName?: string;
   uploadDate?: string;
+  viewCount?: string;
 }
 
 export default function NZDigestPage() {
@@ -146,6 +148,7 @@ export default function NZDigestPage() {
             title: responseBody.videoTitle,
             channelName: responseBody.channelName,
             uploadDate: responseBody.uploadDate,
+            viewCount: responseBody.viewCount,
           };
         }
 
@@ -216,7 +219,7 @@ export default function NZDigestPage() {
       const summaryResponse = await fetch('/api/summarize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ transcript: fetchedTranscriptContent, model: selectedModel }),
+        body: JSON.stringify({ transcript: fetchedTranscriptContent, model: selectedModel, language: locale }),
       });
 
       const summaryData = await summaryResponse.json();
@@ -332,7 +335,7 @@ export default function NZDigestPage() {
 
           {videoDetails && (
             <Card className="mt-6 bg-muted/20 shadow-md" id="video-details-collapsible-card">
-              <Accordion type="single" collapsible className="w-full">
+              <Accordion type="single" collapsible className="w-full" defaultValue="video-details">
                 <AccordionItem value="video-details" className="border-b-0">
                   <AccordionTrigger className="py-3 px-4 hover:no-underline">
                     <CardTitle className="text-xl font-headline flex items-center">
@@ -345,22 +348,29 @@ export default function NZDigestPage() {
                       {videoDetails.title && (
                         <div className="flex items-start">
                           <YoutubeIcon className="mr-2 h-4 w-4 text-primary/80 flex-shrink-0 mt-0.5" />
-                          <span className="font-medium">Title:</span>
+                          <span className="font-medium">{t('videoTitle')}:</span>
                           <span className="ml-1.5 text-foreground/90 break-words">{videoDetails.title}</span>
                         </div>
                       )}
                       {videoDetails.channelName && (
                         <div className="flex items-start">
                           <UserIcon className="mr-2 h-4 w-4 text-primary/80 flex-shrink-0 mt-0.5" />
-                          <span className="font-medium">Channel:</span>
+                          <span className="font-medium">{t('videoChannel')}:</span>
                           <span className="ml-1.5 text-foreground/90 break-words">{videoDetails.channelName}</span>
                         </div>
                       )}
                       {videoDetails.uploadDate && (
                         <div className="flex items-start">
                           <CalendarDaysIcon className="mr-2 h-4 w-4 text-primary/80 flex-shrink-0 mt-0.5" />
-                          <span className="font-medium">Uploaded:</span>
+                          <span className="font-medium">{t('videoUploaded')}:</span>
                           <span className="ml-1.5 text-foreground/90 break-words">{videoDetails.uploadDate}</span>
+                        </div>
+                      )}
+                       {videoDetails.viewCount && (
+                        <div className="flex items-start">
+                          <EyeIcon className="mr-2 h-4 w-4 text-primary/80 flex-shrink-0 mt-0.5" />
+                          <span className="font-medium">{t('videoViews')}:</span>
+                          <span className="ml-1.5 text-foreground/90 break-words">{videoDetails.viewCount}</span>
                         </div>
                       )}
                     </CardContent>
