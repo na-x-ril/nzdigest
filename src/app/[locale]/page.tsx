@@ -335,7 +335,7 @@ export default function NZDigestPage() {
 
           {videoDetails && (
             <Card className="mt-6 bg-muted/20 shadow-md" id="video-details-collapsible-card">
-              <Accordion type="single" collapsible className="w-full" defaultValue="video-details">
+              <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="video-details" className="border-b-0">
                   <AccordionTrigger className="py-3 px-4 hover:no-underline">
                     <CardTitle className="text-xl font-headline flex items-center">
@@ -479,3 +479,5 @@ export default function NZDigestPage() {
     </div>
   );
 }
+
+    
