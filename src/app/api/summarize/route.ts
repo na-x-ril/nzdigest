@@ -1,9 +1,10 @@
-
 import { NextResponse } from 'next/server';
+import { promises as fs } from 'fs';
+import path from 'path';
 import {
   summarizeTranscript as summarizeTranscriptGroq,
   type SummarizeTranscriptGroqInput,
-} from '@/ai/flows/summarize-transcript-flow';
+} from '@/ai/flows/summarize-transcript-groq-flow';
 import {
   summarizeTranscriptGemini,
   type SummarizeTranscriptGeminiInput,
@@ -47,12 +48,27 @@ export async function POST(request: Request) {
       console.log("[API /api/summarize] Input for Gemini:", JSON.stringify(inputForGemini).substring(0, 200) + "...");
       result = await summarizeTranscriptGemini(inputForGemini);
     } else if (
-      selectedModelFromRequest === "llama3-70b-8192" || // Updated to correct Groq LLaMA3 model ID
+      selectedModelFromRequest === "llama3-70b-8192" ||
       selectedModelFromRequest === "meta-llama/llama-4-scout-17b-16e-instruct" ||
       selectedModelFromRequest === "deepseek-r1-distill-llama-70b" ||
       selectedModelFromRequest === "qwen-qwq-32b"
     ) {
       console.log(`[API /api/summarize] Using Groq model: '${selectedModelFromRequest}' for summarization`);
+      
+      const logEntry = {
+        timestamp: new Date().toISOString(),
+        model: selectedModelFromRequest,
+        language: language || 'not_specified',
+      };
+
+      try {
+        const logFilePath = path.join(process.cwd(), 'log.txt');
+        await fs.appendFile(logFilePath, JSON.stringify(logEntry) + '\n');
+        console.log(`[API /api/summarize] Logged Groq request to ${logFilePath}`);
+      } catch (logError) {
+        console.error('[API /api/summarize] Failed to write to log.txt:', logError);
+      }
+      
       const inputForGroq: SummarizeTranscriptGroqInput = { transcript, modelName: selectedModelFromRequest, language };
       console.log("[API /api/summarize] Input for Groq:", JSON.stringify(inputForGroq).substring(0, 200) + "...");
       result = await summarizeTranscriptGroq(inputForGroq);
