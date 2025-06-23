@@ -61,7 +61,7 @@ async function getVideoDetailsFromHTML(url: string, language: string) {
 
         const title = primaryInfo.title?.runs?.map((r: any) => r.text).join('') || "No title found";
         const channelName = secondaryInfo.owner?.videoOwnerRenderer?.title?.runs?.[0]?.text || "No channel found";
-        const uploadDate = primaryInfo.dateText?.simpleText || "No date found";
+        const uploadDate = primaryInfo.relativeDateText?.simpleText || primaryInfo.dateText?.simpleText || "No date found";
         
         let viewCount = "0";
         if (primaryInfo.viewCount?.videoViewCountRenderer?.viewCount?.simpleText) {
