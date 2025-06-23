@@ -62,7 +62,7 @@ export async function POST(request: Request) {
       };
 
       try {
-        const logFilePath = path.join(process.cwd(), 'log.txt');
+        const logFilePath = path.join(process.cwd(), 'log.json');
         await fs.appendFile(logFilePath, JSON.stringify(logEntry) + '\n');
         console.log(`[API /api/summarize] Logged Groq request to ${logFilePath}`);
       } catch (logError) {

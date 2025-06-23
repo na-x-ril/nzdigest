@@ -80,7 +80,6 @@ Please provide the summary in the JSON format above. Go directly to the JSON obj
 
     try {
       const { output } = await ai.generate({
-        model: 'gemini-flash',
         prompt: prompt,
         output: { schema: SummarizeTranscriptOutputSchema },
         config: {
