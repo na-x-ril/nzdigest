@@ -15,9 +15,10 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const transcript = body.transcript;
-    const selectedModelFromRequest = body.model as Model; 
+    const selectedModelFromRequest = body.model as Model;
+    const language = body.language as string | undefined;
 
-    console.log(`[API /api/summarize] Received request. Transcript length: ${transcript?.length}, Model: ${selectedModelFromRequest}`);
+    console.log(`[API /api/summarize] Received request. Transcript length: ${transcript?.length}, Model: ${selectedModelFromRequest}, Language: ${language}`);
     console.log(`[API /api/summarize] Full body received:`, JSON.stringify(body));
 
 
@@ -42,7 +43,7 @@ export async function POST(request: Request) {
 
     if (selectedModelFromRequest === "gemini-flash") {
       console.log("[API /api/summarize] Using Gemini model for summarization");
-      const inputForGemini: SummarizeTranscriptGeminiInput = { transcript };
+      const inputForGemini: SummarizeTranscriptGeminiInput = { transcript, language };
       console.log("[API /api/summarize] Input for Gemini:", JSON.stringify(inputForGemini).substring(0, 200) + "...");
       result = await summarizeTranscriptGemini(inputForGemini);
     } else if (
@@ -52,7 +53,7 @@ export async function POST(request: Request) {
       selectedModelFromRequest === "qwen-qwq-32b"
     ) {
       console.log(`[API /api/summarize] Using Groq model: '${selectedModelFromRequest}' for summarization`);
-      const inputForGroq: SummarizeTranscriptGroqInput = { transcript, modelName: selectedModelFromRequest };
+      const inputForGroq: SummarizeTranscriptGroqInput = { transcript, modelName: selectedModelFromRequest, language };
       console.log("[API /api/summarize] Input for Groq:", JSON.stringify(inputForGroq).substring(0, 200) + "...");
       result = await summarizeTranscriptGroq(inputForGroq);
     } else {

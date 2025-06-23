@@ -33,49 +33,25 @@ const geminiPrompt = ai.definePrompt({
   name: 'geminiTranscriptSummarizer',
   input: { schema: SummarizeTranscriptGeminiInputSchema },
   output: { schema: SummarizeTranscriptOutputSchema }, // Genkit uses this schema to guide the output format
-  prompt: `Anda adalah seorang ahli analisis konten yang bertugas meringkas transkrip video YouTube.
-Tugas Anda adalah menghasilkan ringkasan yang terstruktur dan sangat detail berdasarkan transkrip yang diberikan.
-Pastikan output Anda HANYA berupa objek JSON yang valid, sesuai dengan skema yang telah Anda terima (SummarizeTranscriptOutputSchema). Jangan sertakan teks atau markdown lain di luar objek JSON.
+  prompt: `You are an expert content analyst tasked with summarizing a YouTube video transcript.
+Your task is to generate a structured, highly detailed summary based on the provided transcript.
+The final output language MUST be '{{language}}'. For example, if the language is 'id', use Bahasa Indonesia. If the language is 'en', use English.
 
-Contoh Skema JSON yang diharapkan (mengikuti struktur SummarizeTranscriptOutputSchema):
+Ensure your output is ONLY a valid JSON object that follows the provided schema. Do not include any other text or markdown outside the JSON object.
+
+The JSON schema you must follow is:
 {
-  "topikUtama": "Penjelasan detail konteks dan latar belakang topik utama.",
-  "kronologiAlur": [
-    "Poin penting pertama secara berurutan dari transkrip.",
-    "Poin penting kedua secara berurutan dari transkrip.",
-    "Dan seterusnya..."
-  ],
-  "poinPoinKunci": [
-    {
-      "judul": "Judul Poin Kunci 1 (dari transkrip)",
-      "penjelasan": "Penjelasan detail untuk poin kunci 1, berdasarkan transkrip."
-    },
-    {
-      "judul": "Judul Poin Kunci 2 (dari transkrip)",
-      "penjelasan": "Penjelasan detail untuk poin kunci 2, berdasarkan transkrip."
-    }
-  ],
-  "pembelajaranInsight": [
-    {
-      "judul": "Judul Pembelajaran/Insight Penting 1 (dari transkrip)",
-      "penjelasan": "Penjelasan untuk pembelajaran atau insight penting 1, berdasarkan transkrip."
-    },
-    {
-      "judul": "Judul Pembelajaran/Insight Penting 2 (dari transkrip)",
-      "penjelasan": "Penjelasan untuk pembelajaran atau insight penting 2, berdasarkan transkrip."
-    },
-    {
-      "judul": "Judul Pembelajaran/Insight Penting 3 (dari transkrip)",
-      "penjelasan": "Penjelasan untuk pembelajaran atau insight penting 3, berdasarkan transkrip."
-    }
-  ],
-  "kesimpulan": "Ringkasan mendalam tentang keseluruhan konten video berdasarkan transkrip."
+  "topikUtama": "Detailed explanation of the main topic's context and background.",
+  "kronologiAlur": ["Array of strings containing key points that occurred sequentially."],
+  "poinPoinKunci": [{ "judul": "Title of Key Point", "penjelasan": "Detailed explanation for the key point." }],
+  "pembelajaranInsight": [{ "judul": "Title of Learning/Insight", "penjelasan": "Explanation for the learning or insight." }],
+  "kesimpulan": "In-depth summary of the entire video content."
 }
 
-Transkrip Video:
+Video Transcript:
 {{{transcript}}}
 
-Mohon berikan ringkasan dalam format JSON seperti contoh di atas. Jangan awali respons Anda dengan frasa seperti "Berikut adalah ringkasan...". Langsung ke objek JSON. Pastikan semua string dalam JSON di-escape dengan benar. Berikan contoh spesifik dari transkrip jika relevan untuk memperjelas poin. Output harus berupa objek JSON tunggal yang valid.`,
+Please provide the summary in the specified language and JSON format. Go directly to the JSON object.`,
   config: {
     temperature: 0.3,
     topP: 0.8,
@@ -99,7 +75,9 @@ const geminiSummarizeFlow = ai.defineFlow(
   async (input) => {
     console.log("[Gemini Flow] geminiSummarizeFlow started with input:", JSON.stringify(input).substring(0, 200) + "...");
     try {
-      const { output } = await geminiPrompt(input);
+      // Provide a default language if not specified
+      const flowInput = { ...input, language: input.language || 'en' };
+      const { output } = await geminiPrompt(flowInput);
       if (!output) {
         console.error("[Gemini Flow] Gemini prompt returned no output.");
         throw new Error('Gemini prompt returned no output.');

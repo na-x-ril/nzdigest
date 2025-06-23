@@ -30,6 +30,7 @@ export type SummarizeTranscriptOutput = z.infer<typeof SummarizeTranscriptOutput
 
 export const SummarizeTranscriptBaseInputSchema = z.object({
   transcript: z.string().min(1, { message: "Transcript cannot be empty." }),
+  language: z.string().describe("The language for the summary, e.g., 'en' or 'id'.").optional(),
 });
 export type SummarizeTranscriptBaseInput = z.infer<typeof SummarizeTranscriptBaseInputSchema>;
 
