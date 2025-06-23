@@ -56,6 +56,27 @@
   "ModelSelector": {
     "label": "Select AI Model"
   },
+  "Toast": {
+    "errorInputTitle": "Input Error",
+    "errorInvalidUrl": "Please enter a valid YouTube URL.",
+    "errorModelSelectionTitle": "Model Selection Error",
+    "errorInvalidModel": "An AI model must be selected. Please check the dropdown.",
+    "fetchingTitle": "Fetching Transcript & Details",
+    "fetchingAttempt": "Attempt {attempt} of {max}...",
+    "fetchSuccessTitle": "Transcript & Details Fetched",
+    "fetchSuccessDesc": "Successfully fetched video transcript and details.",
+    "fetchFailedTitle": "Fetch Failed",
+    "fetchFailedDesc": "Attempt {attempt} failed: {message}. Retrying...",
+    "fetchErrorTitle": "Fetch Error",
+    "fetchErrorDesc": "Failed to fetch transcript/details after {attempts} attempts: {message}",
+    "summarySuccessTitle": "Summary Generated",
+    "summarySuccessDesc": "Successfully generated the video summary.",
+    "summaryErrorTitle": "Summarization Error",
+    "summaryErrorDesc": "An unexpected error occurred while generating the summary.",
+    "errorTokenLimit": "The video transcript is too long for the selected AI model (Requested: {requested} tokens, Limit: {limit} tokens). Please try a different model or a shorter video.",
+    "errorUnexpectedFormat": "The AI model couldn't process the transcript or returned an unexpected response. You could try again or select a different AI model.",
+    "errorEmptyTranscript": "Could not fetch transcript or it is empty. The video might not have transcripts available."
+  },
   "NotFound": {
     "title": "404 - Not Found",
     "description": "Could not find the requested page.",

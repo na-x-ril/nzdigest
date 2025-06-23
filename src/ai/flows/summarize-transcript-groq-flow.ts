@@ -93,11 +93,39 @@ const summarizeTranscriptFlow = ai.defineFlow(
       throw new Error("GROQ_API_KEY environment variable is not set.");
     }
 
-    const languageInstruction = `The final summary must be in '${input.language || 'en'}'. If the language is 'id', use Bahasa Indonesia. If 'en', use English.`;
+    const lang = input.language || 'en';
 
-    const systemMessage = `You are an expert content analyst tasked with summarizing a YouTube video transcript.
+    const systemMessageID = `Anda adalah seorang ahli analisis konten yang bertugas meringkas transkrip video YouTube.
+Tugas Anda adalah menghasilkan ringkasan yang terstruktur dan sangat detail berdasarkan transkrip yang diberikan.
+Pastikan output Anda HANYA berupa objek JSON yang valid, sesuai dengan skema yang akan dijelaskan. Jangan sertakan teks atau markdown lain di luar objek JSON.
+
+Skema JSON yang diharapkan:
+{
+  "topikUtama": "Penjelasan detail konteks dan latar belakang topik utama.",
+  "kronologiAlur": [
+    "Poin penting pertama secara berurutan dari transkrip.",
+    "Poin penting kedua secara berurutan dari transkrip.",
+    "Dan seterusnya..."
+  ],
+  "poinPoinKunci": [
+    {
+      "judul": "Judul Poin Kunci 1 (dari transkrip)",
+      "penjelasan": "Penjelasan detail untuk poin kunci 1, berdasarkan transkrip."
+    }
+  ],
+  "pembelajaranInsight": [
+    {
+      "judul": "Judul Pembelajaran/Insight Penting 1 (dari transkrip)",
+      "penjelasan": "Penjelasan untuk pembelajaran atau insight penting 1, berdasarkan transkrip."
+    }
+  ],
+  "kesimpulan": "Ringkasan mendalam tentang keseluruhan konten video berdasarkan transkrip."
+}
+
+Mohon berikan ringkasan dalam format JSON di atas. Jangan awali respons Anda dengan frasa seperti "Berikut adalah ringkasan...". Langsung ke objek JSON. Pastikan semua string dalam JSON di-escape dengan benar. Berikan contoh spesifik dari transkrip jika relevan untuk memperjelas poin. Output harus berupa objek JSON tunggal yang valid.`;
+    
+    const systemMessageEN = `You are an expert content analyst tasked with summarizing a YouTube video transcript.
 Your task is to generate a structured, highly detailed summary based on the provided transcript.
-${languageInstruction}
 Ensure your output is ONLY a valid JSON object, adhering to the schema that will be explained. Do not include any other text or markdown outside the JSON object.
 
 Expected JSON Schema:
@@ -123,7 +151,9 @@ Expected JSON Schema:
   "kesimpulan": "In-depth summary of the entire video content based on the transcript."
 }
 
-Please provide the summary in the specified language and JSON format. Go directly to the JSON object. Ensure all strings in the JSON are correctly escaped. Provide specific examples from the transcript if relevant to clarify points. The output must be a single, valid JSON object.`;
+Please provide the summary in the JSON format above. Do not start your response with phrases like "Here is the summary...". Go directly to the JSON object. Ensure all strings in the JSON are correctly escaped. Provide specific examples from the transcript if relevant to clarify points. The output must be a single, valid JSON object.`;
+
+    const systemMessage = lang === 'id' ? systemMessageID : systemMessageEN;
 
     try {
       console.log(`[Groq Flow] Making Groq API call with model: ${input.modelName}`);

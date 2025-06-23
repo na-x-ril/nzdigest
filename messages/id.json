@@ -56,6 +56,27 @@
   "ModelSelector": {
     "label": "Pilih Model AI"
   },
+  "Toast": {
+    "errorInputTitle": "Kesalahan Input",
+    "errorInvalidUrl": "Silakan masukkan URL YouTube yang valid.",
+    "errorModelSelectionTitle": "Kesalahan Pemilihan Model",
+    "errorInvalidModel": "Model AI harus dipilih. Silakan periksa menu dropdown.",
+    "fetchingTitle": "Mengambil Transkrip & Detail",
+    "fetchingAttempt": "Percobaan {attempt} dari {max}...",
+    "fetchSuccessTitle": "Transkrip & Detail Diambil",
+    "fetchSuccessDesc": "Berhasil mengambil transkrip dan detail video.",
+    "fetchFailedTitle": "Pengambilan Gagal",
+    "fetchFailedDesc": "Percobaan {attempt} gagal: {message}. Mencoba lagi...",
+    "fetchErrorTitle": "Kesalahan Pengambilan",
+    "fetchErrorDesc": "Gagal mengambil transkrip/detail setelah {attempts} percobaan: {message}",
+    "summarySuccessTitle": "Ringkasan Dihasilkan",
+    "summarySuccessDesc": "Berhasil menghasilkan ringkasan video.",
+    "summaryErrorTitle": "Kesalahan Peringkasan",
+    "summaryErrorDesc": "Terjadi kesalahan tak terduga saat membuat ringkasan.",
+    "errorTokenLimit": "Transkrip video terlalu panjang untuk model AI yang dipilih (Diminta: {requested} token, Batas: {limit} token). Coba model lain atau video yang lebih pendek.",
+    "errorUnexpectedFormat": "Model AI tidak dapat memproses transkrip atau memberikan respons yang tidak terduga. Anda bisa mencoba lagi atau memilih model AI yang berbeda.",
+    "errorEmptyTranscript": "Tidak dapat mengambil transkrip atau transkrip kosong. Video mungkin tidak memiliki transkrip yang tersedia."
+  },
   "NotFound": {
     "title": "404 - Tidak Ditemukan",
     "description": "Halaman yang diminta tidak dapat ditemukan.",

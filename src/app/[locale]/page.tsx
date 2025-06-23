@@ -65,6 +65,7 @@ interface VideoDetails {
 
 export default function NZDigestPage() {
   const t = useTranslations('HomePage');
+  const t_toast = useTranslations('Toast');
   const locale = useLocale();
 
   const [youtubeUrl, setYoutubeUrl] = useState('');
@@ -99,10 +100,10 @@ export default function NZDigestPage() {
     setVideoDetails(null);
 
     if (!youtubeUrl) {
-      setError("Please enter a YouTube URL.");
+      setError(t_toast('errorInvalidUrl'));
       toast({
-        title: "Input Error",
-        description: "Please enter a YouTube URL.",
+        title: t_toast('errorInputTitle'),
+        description: t_toast('errorInvalidUrl'),
         variant: "destructive",
       });
       return;
@@ -112,10 +113,10 @@ export default function NZDigestPage() {
     if (!selectedModel || typeof selectedModel !== 'string' || selectedModel.trim().length === 0) {
       const clientErrorMsg = `Client-side: Invalid AI model selected. Value: '${selectedModel}', Type: ${typeof selectedModel}. Please select a model.`;
       console.error(clientErrorMsg);
-      setError("An AI model must be selected. Please check the dropdown.");
+      setError(t_toast('errorInvalidModel'));
       toast({
-        title: "Model Selection Error",
-        description: "An AI model must be selected. Please check the dropdown.",
+        title: t_toast('errorModelSelectionTitle'),
+        description: t_toast('errorInvalidModel'),
         variant: "destructive",
       });
       return; 
@@ -132,8 +133,8 @@ export default function NZDigestPage() {
     for (let attempt = 1; attempt <= MAX_TRANSCRIPT_RETRIES; attempt++) {
       try {
         toast({
-          title: "Fetching Transcript & Details",
-          description: `Attempt ${attempt} of ${MAX_TRANSCRIPT_RETRIES}...`,
+          title: t_toast('fetchingTitle'),
+          description: t_toast('fetchingAttempt', { attempt, max: MAX_TRANSCRIPT_RETRIES }),
         });
         const transcriptResponse = await fetch('/api/transcript', {
           method: 'POST',
@@ -167,8 +168,8 @@ export default function NZDigestPage() {
         transcriptFetched = true;
         finalErrorForDisplay = null; 
         toast({
-          title: "Transcript & Details Fetched",
-          description: "Successfully fetched video transcript and details.",
+          title: t_toast('fetchSuccessTitle'),
+          description: t_toast('fetchSuccessDesc'),
         });
         break; 
       } catch (e: any) {
@@ -181,15 +182,15 @@ export default function NZDigestPage() {
 
         if (attempt < MAX_TRANSCRIPT_RETRIES) {
           toast({
-            title: "Fetch Failed",
-            description: `Attempt ${attempt} failed: ${finalErrorForDisplay}. Retrying...`,
+            title: t_toast('fetchFailedTitle'),
+            description: t_toast('fetchFailedDesc', { attempt, message: finalErrorForDisplay }),
             variant: "destructive",
           });
           await sleep(RETRY_DELAY_MS);
         } else {
           toast({
-            title: "Fetch Error",
-            description: `Failed to fetch transcript/details after ${attempt} attempts: ${finalErrorForDisplay}`,
+            title: t_toast('fetchErrorTitle'),
+            description: t_toast('fetchErrorDesc', { attempts: attempt, message: finalErrorForDisplay }),
             variant: "destructive",
           });
         }
@@ -203,7 +204,7 @@ export default function NZDigestPage() {
     }
 
     if (!transcriptFetched || !fetchedTranscriptContent.trim()) {
-      setError(finalErrorForDisplay || "Could not fetch transcript or transcript is empty. The video might not have transcripts available, or it's too short.");
+      setError(finalErrorForDisplay || t_toast('errorEmptyTranscript'));
       setTranscript(''); 
       setSummary(null);   
       return; 
@@ -231,11 +232,11 @@ export default function NZDigestPage() {
       }
       setSummary(summaryData);
       toast({
-        title: "Summary Generated",
-        description: "Successfully generated the video summary.",
+        title: t_toast('summarySuccessTitle'),
+        description: t_toast('summarySuccessDesc'),
       });
     } catch (summaryError: any) {
-      let displayError = "An unexpected error occurred while generating the summary.";
+      let displayError = t_toast('summaryErrorDesc');
       if (summaryError && typeof summaryError.message === 'string') {
           const errorMessageContent = summaryError.message; 
           const lowerMessage = errorMessageContent.toLowerCase();
@@ -262,13 +263,13 @@ export default function NZDigestPage() {
             } catch (e) {
                 console.warn("Could not parse token limit/requested from error message string:", e);
             }
-            displayError = `The video transcript is too long for the selected AI model (Requested: ${requested} tokens, Limit: ${limit} tokens). Please try a different model (e.g., Gemini Flash) or choose a shorter video.`;
+            displayError = t_toast('errorTokenLimit', { requested, limit });
           } else if (lowerMessage.includes('failed to generate summary content') || lowerMessage.includes('unexpected format') || lowerMessage.includes('did not match expected schema')) {
-            displayError = "The AI model couldn't process the transcript or returned an unexpected response. This can sometimes happen with complex or unusual video content. You could try again, select a different AI model, or use a different video.";
+            displayError = t_toast('errorUnexpectedFormat');
           } else if (lowerMessage.includes('transcript cannot be empty')) {
-              displayError = "The transcript provided was empty. A summary cannot be generated without content.";
+              displayError = t_toast('errorEmptyTranscript');
           } else if (lowerMessage.includes('model selection is required') || lowerMessage.includes('unsupported model')) {
-              displayError = "Please select a valid AI model from the dropdown menu before generating a summary.";
+              displayError = t_toast('errorInvalidModel');
           } else {
               displayError = errorMessageContent; 
           }
@@ -276,7 +277,7 @@ export default function NZDigestPage() {
       setError(displayError);
       setSummary(null); 
       toast({
-        title: "Summarization Error",
+        title: t_toast('summaryErrorTitle'),
         description: displayError,
         variant: "destructive",
       });
@@ -479,5 +480,3 @@ export default function NZDigestPage() {
     </div>
   );
 }
-
-    
