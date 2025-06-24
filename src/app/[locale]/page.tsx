@@ -290,8 +290,8 @@ export default function NZDigestPage() {
     <div className="flex flex-col items-center justify-start bg-background p-4 sm:pt-12">
       <Card className="w-full max-w-2xl shadow-2xl rounded-lg" id="main-content-card">
         <CardHeader className="text-center">
-           <div className="flex justify-center items-center mt-2">
-             <h1 className="text-8xl font-semibold text-primary" style={{ letterSpacing: '-0.13em' }}>
+          <div className="flex justify-center items-center mt-2">
+              <h1 className="text-8xl sm:font-bold md:font-bold lg:font-semibold xl:font-semibold text-primary" style={{ letterSpacing: '-0.13em' }}>
                 NZD
               </h1>
           </div>
