@@ -1,14 +1,13 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { YoutubeIcon, BrainCircuitIcon, LightbulbIcon } from 'lucide-react'; // YoutubeIcon might be less relevant now
+import { BrainCircuitIcon, LightbulbIcon } from 'lucide-react';
 
 export default function AboutPage() {
   return (
-    <div className="container mx-auto max-w-3xl py-8 px-4 sm:py-12">
-      <Card className="shadow-lg rounded-lg">
+    <div className="container mx-auto max-w-3xl py-4 px-4">
+      <Card className="shadow-lg">
         <CardHeader className="text-center">
           <div className="flex justify-center items-center mb-4">
-            {/* Consider a more generic icon or the new NZD logo if appropriate here */}
             <BrainCircuitIcon className="h-16 w-16 text-primary" /> 
           </div>
           <CardTitle className="flex justify-center text-4xl font-headline tracking-tight gap-2">

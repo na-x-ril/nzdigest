@@ -6,50 +6,18 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2, FileTextIcon, SparklesIcon, AlertCircle, ListChecksIcon, KeyIcon, LightbulbIcon, CheckSquareIcon, YoutubeIcon, UserIcon, CalendarDaysIcon, InfoIcon } from 'lucide-react';
+import { Loader2, FileTextIcon, SparklesIcon, AlertCircle, ListChecksIcon, KeyIcon, LightbulbIcon, CheckSquareIcon, UserIcon, CalendarDaysIcon, InfoIcon } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useToast } from "@/hooks/use-toast";
 import type { SummarizeTranscriptOutput } from '@/ai/schemas/transcript-summary-schemas';
 import { cn } from '@/lib/utils';
 import { useModel } from '@/contexts/ModelContext';
+import formatSummaryText from '@/utils/format-summary';
+import { SiYoutube } from 'react-icons/si';
 
-function formatSummaryText(text: string | undefined | null): string {
-  if (!text) return '';
-
-  let result = text;
-
-  result = result.replace(/```[a-zA-Z]+\n/g, '```'); 
-  result = result.replace(/\*\*(.*?)\*\*/g, (_match, p1) => `<strong>${p1}</strong>`); 
-  result = result.replace(/\*(.*?)\*/g, (_match, p1) => `<em>${p1}</em>`); 
-  result = result.replace(/~(.*?)~/g, (_match, p1) => `<del>${p1}</del>`); 
-  result = result.replace(/^### (.*)$/gm, (_match, p1) => `<h3>${p1}</h3>`); 
-  result = result.replace(/^## (.*)$/gm, (_match, p1) => `<h2>${p1}</h2>`); 
-  result = result.replace(/^# (.*)$/gm, (_match, p1) => `<h1>${p1}</h1>`); 
-  
-  
-  result = result.replace(/^\s*[-*+]\s+(.*)/gm, (_match, p1) => `<li>${p1}</li>`);
-  
-  if (result.includes("<li>")) {
-      result = `<ul>${result.replace(/<\/li>\s*<li>/g, '</li><li>')}</ul>`;
-      
-      result = result.replace(/<ul>\s*<\/ul>/g, '');
-  }
-  
-  
-  result = result.replace(/^\s*\d+\.\s+(.*)/gm, (_match, p1) => `<li class="ml-4">${p1}</li>`);
-   if (result.includes('<li class="ml-4">')) {
-       result = `<ol>${result.replace(/<\/li>\s*<li class="ml-4">/g, '</li><li class="ml-4">')}</ol>`;
-       result = result.replace(/<ol>\s*<\/ol>/g, '');
-   }
-
-  result = result.replace(/\n/g, '<br />'); 
-
-  return result;
-}
-
-const MAX_TRANSCRIPT_RETRIES = 3; 
-const RETRY_DELAY_MS = 1500; 
+const MAX_TRANSCRIPT_RETRIES = 3;
+const RETRY_DELAY_MS = 1500;
 
 async function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -282,7 +250,7 @@ export default function NZDigestPage() {
 
   return (
     <div className="flex flex-col items-center justify-start bg-background p-4 sm:pt-12">
-      <Card className="w-full max-w-2xl shadow-2xl rounded-lg" id="main-content-card">
+      <Card className="w-full max-w-2xl shadow-2xl" id="main-content-card">
         <CardHeader className="text-center">
            <div className="flex justify-center items-center my-4">
              <h1 className="text-7xl font-bold text-primary" style={{ letterSpacing: '-0.13em' }}>
@@ -342,7 +310,7 @@ export default function NZDigestPage() {
                     <CardContent className="text-sm space-y-1.5 px-4 pb-4 pt-1">
                       {videoDetails.title && (
                         <div className="flex items-start">
-                          <YoutubeIcon className="mr-2 h-4 w-4 text-primary/80 flex-shrink-0 mt-0.5" />
+                          <SiYoutube className="mr-2 h-4 w-4 text-primary/80 flex-shrink-0 mt-0.5" />
                           <span className="font-medium">Title:</span>
                           <span className="ml-1.5 text-foreground/90 break-words">{videoDetails.title}</span>
                         </div>

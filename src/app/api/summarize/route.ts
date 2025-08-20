@@ -1,21 +1,18 @@
 
 import { NextResponse } from 'next/server';
-import {
-  summarizeTranscript as summarizeTranscriptGroq,
-  type SummarizeTranscriptGroqInput,
-} from '@/ai/flows/summarize-transcript-flow';
-import {
-  summarizeTranscriptGemini,
-  type SummarizeTranscriptGeminiInput,
-} from '@/ai/flows/summarize-transcript-gemini-flow';
+import { type SummarizeTranscriptGroqInput,
+} from '@/ai/schemas/transcript-summary-schemas';
+import { summarizeTranscript as summarizeTranscriptGroq } from '@/ai/flows/summarize-transcript-flow';
+import { summarizeTranscriptGemini } from '@/ai/flows/summarize-transcript-gemini-flow';
+import { type SummarizeTranscriptGeminiInput } from '@/ai/schemas/transcript-summary-schemas'
 import type { SummarizeTranscriptOutput } from '@/ai/schemas/transcript-summary-schemas';
-import type { Model } from '@/contexts/ModelContext';
+import { GROQ_MODELS, Model } from '@/ai/model';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     const transcript = body.transcript;
-    const selectedModelFromRequest = body.model as Model; 
+    const selectedModelFromRequest = body.model as Model;
 
     console.log(`[API /api/summarize] Received request. Transcript length: ${transcript?.length}, Model: ${selectedModelFromRequest}`);
     console.log(`[API /api/summarize] Full body received:`, JSON.stringify(body));
@@ -45,16 +42,11 @@ export async function POST(request: Request) {
       const inputForGemini: SummarizeTranscriptGeminiInput = { transcript };
       console.log("[API /api/summarize] Input for Gemini:", JSON.stringify(inputForGemini).substring(0, 200) + "...");
       result = await summarizeTranscriptGemini(inputForGemini);
-    } else if (
-      selectedModelFromRequest === "llama3-70b-8192" || // Updated to correct Groq LLaMA3 model ID
-      selectedModelFromRequest === "meta-llama/llama-4-scout-17b-16e-instruct" ||
-      selectedModelFromRequest === "deepseek-r1-distill-llama-70b" ||
-      selectedModelFromRequest === "qwen-qwq-32b"
-    ) {
-      console.log(`[API /api/summarize] Using Groq model: '${selectedModelFromRequest}' for summarization`);
-      const inputForGroq: SummarizeTranscriptGroqInput = { transcript, modelName: selectedModelFromRequest };
-      console.log("[API /api/summarize] Input for Groq:", JSON.stringify(inputForGroq).substring(0, 200) + "...");
-      result = await summarizeTranscriptGroq(inputForGroq);
+    } else if (GROQ_MODELS.has(selectedModelFromRequest)) {
+      result = await summarizeTranscriptGroq({
+        transcript,
+        modelName: selectedModelFromRequest,
+      });
     } else {
       console.error(`[API /api/summarize] Error: Unsupported model: '${selectedModelFromRequest}'`);
       return NextResponse.json({ error: `Unsupported model: ${selectedModelFromRequest}` }, { status: 400 });

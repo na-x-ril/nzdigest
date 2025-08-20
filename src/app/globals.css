@@ -115,28 +115,28 @@ body {
 }
 
 @keyframes ai-colors-animation {
-  0%, 100% {
-    background: linear-gradient(135deg, hsl(210, 80%, 60%), hsl(220, 80%, 70%));
-    border-color: hsl(210, 80%, 50%);
-    color: hsl(0, 0%, 100%);
-    box-shadow: 0 0 15px hsl(210, 80%, 60%);
-  }
-  25% {
-    background: linear-gradient(135deg, hsl(240, 70%, 65%), hsl(250, 70%, 75%));
-    border-color: hsl(240, 70%, 55%);
-    color: hsl(0, 0%, 100%);
-    box-shadow: 0 0 15px hsl(240, 70%, 65%);
+  0% {
+    background: linear-gradient(135deg, #40ffaa, #4079ff, #40ffaa);
+    background-size: 400% 400%;
+    border-color: #40ffaa;
+    color: #000;
+    box-shadow: 0 0 15px #40ffaa;
+    background-position: 0% 50%;
   }
   50% {
-    background: linear-gradient(135deg, hsl(180, 70%, 55%), hsl(170, 70%, 65%));
-    border-color: hsl(180, 70%, 45%);
-    color: hsl(0, 0%, 10%); /* Better readability on teal */
-    box-shadow: 0 0 15px hsl(180, 70%, 55%);
+    background: linear-gradient(135deg, #4079ff, #40ffaa, #4079ff);
+    background-size: 400% 400%;
+    border-color: #4079ff;
+    color: #fff;
+    box-shadow: 0 0 15px #4079ff;
+    background-position: 100% 50%;
   }
-  75% {
-    background: linear-gradient(135deg, hsl(270, 70%, 65%), hsl(280, 70%, 75%));
-    border-color: hsl(270, 70%, 55%);
-    color: hsl(0, 0%, 100%);
-    box-shadow: 0 0 15px hsl(270, 70%, 65%);
+  100% {
+    background: linear-gradient(135deg, #40ffaa, #4079ff, #40ffaa);
+    background-size: 400% 400%;
+    border-color: #40ffaa;
+    color: #000;
+    box-shadow: 0 0 15px #40ffaa;
+    background-position: 0% 50%;
   }
 }
