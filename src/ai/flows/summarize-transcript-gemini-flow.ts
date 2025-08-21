@@ -34,9 +34,9 @@ const geminiPrompt = ai.definePrompt({
   output: { schema: SummarizeTranscriptOutputSchema }, // Genkit uses this schema to guide the output format
   prompt: `Anda adalah seorang ahli analisis konten yang bertugas meringkas transkrip video YouTube.
 Tugas Anda adalah menghasilkan ringkasan yang terstruktur dan sangat detail berdasarkan transkrip yang diberikan.
-Pastikan output Anda HANYA berupa objek JSON yang valid, sesuai dengan skema yang telah Anda terima (SummarizeTranscriptOutputSchema). Jangan sertakan teks atau markdown lain di luar objek JSON.
+Pastikan output Anda HANYA berupa objek JSON yang valid, sesuai dengan skema yang akan dijelaskan. Jangan sertakan teks atau markdown lain di luar objek JSON.
 
-Contoh Skema JSON yang diharapkan (mengikuti struktur SummarizeTranscriptOutputSchema):
+Skema JSON yang diharapkan:
 {
   "topikUtama": "Penjelasan detail konteks dan latar belakang topik utama.",
   "kronologiAlur": [
@@ -74,7 +74,7 @@ Contoh Skema JSON yang diharapkan (mengikuti struktur SummarizeTranscriptOutputS
 Transkrip Video:
 {{{transcript}}}
 
-Mohon berikan ringkasan dalam format JSON seperti contoh di atas. Jangan awali respons Anda dengan frasa seperti "Berikut adalah ringkasan...". Langsung ke objek JSON. Pastikan semua string dalam JSON di-escape dengan benar. Berikan contoh spesifik dari transkrip jika relevan untuk memperjelas poin. Output harus berupa objek JSON tunggal yang valid.`,
+Mohon berikan ringkasan dalam format JSON di atas. Jangan awali respons Anda dengan frasa seperti "Berikut adalah ringkasan...". Langsung ke objek JSON. Pastikan semua string dalam JSON di-escape dengan benar. Berikan contoh spesifik dari transkrip jika relevan untuk memperjelas poin. Output harus berupa objek JSON tunggal yang valid.`,
   config: {
     temperature: 0.3,
     topP: 0.8,

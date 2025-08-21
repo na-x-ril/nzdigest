@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils';
 import { useModel } from '@/contexts/ModelContext';
 import formatSummaryText from '@/utils/format-summary';
 import { SiYoutube } from 'react-icons/si';
+import { CopyButton } from '@/components/copy-button';
 
 const MAX_TRANSCRIPT_RETRIES = 3;
 const RETRY_DELAY_MS = 1500;
@@ -340,6 +341,7 @@ export default function NZDigestPage() {
             <div id="transcript-section" className="space-y-3 pt-4">
               <CardTitle className="flex items-center text-2xl font-headline">
                 <FileTextIcon className="mr-3 h-6 w-6 text-primary" /> Transcript
+                <CopyButton text={transcript} />
               </CardTitle>
               <ScrollArea className="h-64 w-full rounded-md border bg-muted/30 p-4" id="transcript-scroll-area">
                 <p className="text-sm whitespace-pre-wrap leading-relaxed pb-2">{transcript}</p>
@@ -349,10 +351,10 @@ export default function NZDigestPage() {
           
           {summary && typeof summary === 'object' && summary.topikUtama && (
             <div id="summary-section" className="space-y-6 pt-6">
-              <CardTitle className="flex items-center text-2xl font-headline mb-4">
+              <CardTitle className="flex items-center space-x-2 text-2xl font-headline mb-4">
                 <SparklesIcon className="mr-3 h-6 w-6 text-primary" /> Detail Ringkasan
+                <CopyButton text={JSON.stringify(summary, null, 2)} />
               </CardTitle>
-              
               <div id="summary-section-topik-utama" className="space-y-2">
                 <h3 className="font-semibold text-lg flex items-center text-foreground/90">
                   <SparklesIcon className="mr-2 h-5 w-5 text-primary/80" />Topik Utama

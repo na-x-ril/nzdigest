@@ -4,7 +4,7 @@ import { ThemeToggle } from "../theme-toggle";
 
 export default function Header() {
   return(
-    <header className="fixed h-16 top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex justify-center items-center">
+    <header className="fixed h-16 top-0 right-0 left-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex justify-center items-center">
       <div className="w-[80%] mx-auto flex h-14 items-center justify-between">
         <div className="flex items-center space-x-4">
           <Link href="/" className="flex items-center space-x-0">
