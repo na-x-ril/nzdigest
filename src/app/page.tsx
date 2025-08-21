@@ -56,6 +56,42 @@ export default function NZDigestPage() {
     }
   };
 
+  function stringifySummary(summary: SummarizeTranscriptOutput): string {
+    let result = "";
+
+    if (summary.topikUtama) {
+      result += `Topik Utama:\n${summary.topikUtama}\n\n`;
+    }
+
+    if (summary.kronologiAlur && summary.kronologiAlur.length > 0) {
+      result += "Kronologi / Alur:\n";
+      result += summary.kronologiAlur.map((item, i) => `${i + 1}. ${item}`).join("\n");
+      result += "\n\n";
+    }
+
+    if (summary.poinPoinKunci && summary.poinPoinKunci.length > 0) {
+      result += "Poin-Poin Kunci:\n";
+      result += summary.poinPoinKunci
+        .map((p, i) => `- ${p.judul ? p.judul + ": " : ""}${p.penjelasan ?? ""}`)
+        .join("\n");
+      result += "\n\n";
+    }
+
+    if (summary.pembelajaranInsight && summary.pembelajaranInsight.length > 0) {
+      result += "Pembelajaran / Insight:\n";
+      result += summary.pembelajaranInsight
+        .map((p, i) => `- ${p.judul ? p.judul + ": " : ""}${p.penjelasan ?? ""}`)
+        .join("\n");
+      result += "\n\n";
+    }
+
+    if (summary.kesimpulan) {
+      result += `Kesimpulan:\n${summary.kesimpulan}\n`;
+    }
+
+    return result.trim();
+  }
+
   const handleSubmit = async () => {
     setError(null);
     setTranscript('');
@@ -339,7 +375,7 @@ export default function NZDigestPage() {
 
           {transcript && (
             <div id="transcript-section" className="space-y-3 pt-4">
-              <CardTitle className="flex items-center text-2xl font-headline">
+              <CardTitle className="flex items-center space-x-2 text-2xl font-headline">
                 <FileTextIcon className="mr-3 h-6 w-6 text-primary" /> Transcript
                 <CopyButton text={transcript} />
               </CardTitle>
@@ -353,7 +389,7 @@ export default function NZDigestPage() {
             <div id="summary-section" className="space-y-6 pt-6">
               <CardTitle className="flex items-center space-x-2 text-2xl font-headline mb-4">
                 <SparklesIcon className="mr-3 h-6 w-6 text-primary" /> Detail Ringkasan
-                <CopyButton text={JSON.stringify(summary, null, 2)} />
+                <CopyButton text={stringifySummary(summary)} />
               </CardTitle>
               <div id="summary-section-topik-utama" className="space-y-2">
                 <h3 className="font-semibold text-lg flex items-center text-foreground/90">
